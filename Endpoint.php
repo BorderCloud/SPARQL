@@ -16,7 +16,7 @@ require_once("ParserSparqlResult.php");
  * and read the result in an array.
  * 
  * Example : send a simple query to DBpedia
- * <code>
+ * ```php
  * <?php
  * 
  * require_once('bordercloud/Endpoint.php');
@@ -45,7 +45,7 @@ require_once("ParserSparqlResult.php");
  *  	echo "\n";
  *  }
  * ?>
- * </code>
+ * ```
  *
  * For the different server, you can use the property setEndpointQuery,
  * setEndpointUpdate,setNameParameterQueryRead or setNameParameterQueryWrite.
@@ -76,7 +76,7 @@ require_once("ParserSparqlResult.php");
  *  in the function query and read directly the result true or false.
  * 
  * Example : send a query ASK with the parameter raw
- * <code>
+ * ```php
  * <?php
  *    $q = "PREFIX a: <http://example.com/test/a/>
  *            PREFIX b: <http://example.com/test/b/>
@@ -89,7 +89,7 @@ require_once("ParserSparqlResult.php");
  *    }
  *    var_dump($res);
  * ?>
- * </code>
+ * ```
  * 
  * You can insert data also with SPARQL and the function query in your graphs.
  * The BorderCloud's service can host your graphs ( http://www.bordercloud.com ).
@@ -97,7 +97,7 @@ require_once("ParserSparqlResult.php");
  * With 3 parameters, you are alone to update your graph.
  * 
  * Example : send a query Insert
- * <code>
+ * ```php
  *     $sp_write = new Endpoint($MyEndPointSparql,$MyCode,$MyGraph);
  *     echo "\nInsert :";
  *     $q = "
@@ -116,10 +116,10 @@ require_once("ParserSparqlResult.php");
  *         throw new Exception(print_r($err,true));
  *     }
  *     var_dump($res);
- * </code>
+ * ```
  *  
  * Example : send a query Delete
- * <code>
+ * ```php
  *     $sp_write = new Endpoint($MyEndPointSparql,$MyCode,$MyGraph);
  * 
  *     echo "\nDelete :";
@@ -138,7 +138,7 @@ require_once("ParserSparqlResult.php");
  *         throw new Exception(print_r($err,true));
  *     }
  *     var_dump($res);
- * </code>
+ * ```
  *  
  *  You can change the format of the response with the function
  *  QueryRead and QueryUpdate.
