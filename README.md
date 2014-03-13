@@ -1,6 +1,4 @@
-## About 
-
-Lib Sparql 1.1 HTTP Client for your SPARQL's endpoint.
+# Lib Sparql 1.1 HTTP Client 
 
 ## Example : send a simple query to DBpedia
 ```php
