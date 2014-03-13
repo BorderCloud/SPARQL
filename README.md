@@ -14,7 +14,7 @@ To your composer.json, and then you can simply install with:
 
     composer install
 
-### Test the lib with a easy tool : the script query
+### Test the lib with a php script : query
 
 You can test your first query sparql with DBPEDIA via a command line :
 ```
