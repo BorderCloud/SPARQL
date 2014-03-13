@@ -1,0 +1,13 @@
+{
+	"name": "BorderCloud/SPARQL",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/BorderCloud/SPARQL"
+        }
+    ],
+    "require-dev": {
+	    "evert/phpdoc-md" : "0.0.*",
+        "phpdocumentor/phpdocumentor": "2.*"
+    }
+}
