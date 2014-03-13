@@ -1,8 +1,8 @@
-# About 
+## About 
 
 Lib Sparql 1.1 HTTP Client for your SPARQL's endpoint.
 
-# Example : send a simple query to DBpedia
+## Example : send a simple query to DBpedia
 ```php
 <?php
 
@@ -34,29 +34,29 @@ require_once('bordercloud/Endpoint.php');
 ?>
 ```
 
-#  Documentation API 
+##  Documentation API 
 [API](doc/Endpoint.md)
 
-#  Install 
+##  Install 
 TODO !!
 
-#  Copy Sources and tests 
+##  Copy Sources and tests 
 TODO !!
 git clone http://github.com/BorderCloud/SPARQL.git
 
-#  Howto TESTS 
+##  Howto TESTS 
 TODO !!
 
-#  Contact 
+##  Contact 
 
 If you have remarks, questions, or suggestions, please send them to
 karima.rafes@bordercloud.com
 
-# Release-Notes 
+## Release-Notes 
 
 * V0.1.0.0 version SPARQL.Pro lib PHP by Karima Rafes <karima.rafes@bordercloud.com>
 
-#  license 
+##  license 
 SPARQL.Pro lib PHP (c)2014 by Karima Rafes - BorderCloud
 
 SPARQL.Pro lib PHP is licensed under a
@@ -65,7 +65,7 @@ Creative Commons Attribution-ShareAlike 4.0 International License.
 You should have received a copy of the license along with this
 work. If not, see <http://creativecommons.org/licenses/by-sa/4.0/>. 
 
-# Compile DOC 
+## Compile DOC 
 php ../vendor/phpdocumentor/phpdocumentor/bin/phpdoc.php -d . --template="xml"
 ../vendor/evert/phpdoc-md/bin/phpdocmd ./output/structure.xml doc
 
