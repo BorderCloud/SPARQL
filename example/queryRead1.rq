@@ -1,0 +1,7 @@
+SELECT  *
+WHERE {
+	GRAPH ?g {
+	 ?o ?p ?v .
+	}
+}
+LIMIT 10
