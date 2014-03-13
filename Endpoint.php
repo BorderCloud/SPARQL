@@ -51,26 +51,36 @@ require_once("ParserSparqlResult.php");
  * setEndpointUpdate,setNameParameterQueryRead or setNameParameterQueryWrite.
  * 
  * EXAMPLE to config : Virtuoso
+ * ```php
  * $sp_readonly = new Endpoint("http://localhost/tests/",$modeRead,$modeDebug);
-
+ * ```
+ * 
  * EXAMPLE to config : 4Store
+ * ```php
  * $sp_readonly = new Endpoint("http://localhost/",$modeRead,$modeDebug);
-
+ * ```
+ * 
  * EXAMPLE to config : Sesame
+ * ```php
  * $sp_readonly = new Endpoint("",$modeRead,$modeDebug);
  * $sp_readonly->setEndpointQuery("http://localhost/openrdf-sesame/repositories/tests");
  * $sp_readonly->setEndpointUpdate("http://localhost/openrdf-sesame/repositories/tests/statements");
-
+ * ```
+ * 
  * EXAMPLE to config : Fuseki
+ * ```php
  * $sp_readonly = new Endpoint("",$modeRead,$modeDebug);
  * $sp_readonly->setEndpointQuery("http://localhost/tests/query");
  * $sp_readonly->setEndpointUpdate("http://localhost/tests/update");
-
+ * ```
+ * 
  * EXAMPLE to config : Allegrograph
+ * ```php
  * $sp_readonly = new Endpoint("",$modeRead,$modeDebug);
  * $sp_readonly->setEndpointQuery("http://localhost/repositories/tests");
  * $sp_readonly->setEndpointUpdate("http://localhost/repositories/tests");
  * $sp_readonly->setNameParameterQueryWrite("query");
+ * ```
  * 
  *  With a query ASK, you can use the parameter 'raw'
  *  in the function query and read directly the result true or false.
