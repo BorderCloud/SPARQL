@@ -63,6 +63,9 @@ class ParserSparqlResult extends Base {
    //callback for the end of each element
    function endElement($parser_object, $elementname) {
     	if($elementname == "binding"){
+			if(!isset($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"]))
+				$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"]=NULL;
+				
 			if($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"] == "uri"){
 				$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = trim($this->_value);
 			}elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"] == "literal"){
