@@ -120,7 +120,9 @@ class Curl
 	function send_post_data($url, $postdata, $arrayHeader=null, $ip=null, $timeout=10)
 	{
 		//set various curl options first
-
+		if($this->debug)
+			curl_setopt($this->ch, CURLOPT_VERBOSE, true);
+					
 		// set url to post to
 		curl_setopt($this->ch, CURLOPT_URL,$url);
 
@@ -200,6 +202,9 @@ class Curl
     */
 	function fetch_url($url, $ip=null, $timeout=5)
 	{
+		if($this->debug)
+			curl_setopt($this->ch, CURLOPT_VERBOSE, true);
+			
 		// set url to post to
 		curl_setopt($this->ch, CURLOPT_URL,$url);
 
@@ -254,6 +259,8 @@ class Curl
     */
 	function fetch_into_file($url, $fp, $ip=null, $timeout=5)
 	{
+		if($this->debug)
+			curl_setopt($this->ch, CURLOPT_VERBOSE, true);
 		// set url to post to
 		curl_setopt($this->ch, CURLOPT_URL,$url);
 
@@ -310,6 +317,8 @@ class Curl
     */
 	function send_multipart_post_data($url, $postdata, $file_field_array=array(), $ip=null, $timeout=30)
 	{
+		if($this->debug)
+			curl_setopt($this->ch, CURLOPT_VERBOSE, true);
 	//curl_setopt($this->ch, CURLOPT_VERBOSE, true);
 		//set various curl options first
 
@@ -456,6 +465,8 @@ class Curl
 
 	function send_post_content($url, $headersdata,$postdata, $content, $ip=null, $timeout=10)
 	{
+		if($this->debug)
+			curl_setopt($this->ch, CURLOPT_VERBOSE, true);
 		//set various curl options first
 
 		// set url to post to
@@ -529,6 +540,8 @@ class Curl
 	
 	function send_put_data($url, $headersdata,$putdata, $ip=null, $timeout=10)
 	{
+		if($this->debug)
+			curl_setopt($this->ch, CURLOPT_VERBOSE, true);
 		//set various curl options first
 
 		// set url to post to
@@ -589,6 +602,8 @@ class Curl
 
 	function send_delete($url, $ip=null, $timeout=10)
 	{
+		if($this->debug)
+			curl_setopt($this->ch, CURLOPT_VERBOSE, true);
 		//set various curl options first
 
 		// set url to post to

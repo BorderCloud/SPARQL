@@ -385,14 +385,25 @@ class Endpoint extends Base {
 	 */
 	public function query($q, $result_format = 'rows') {	
 		$t1 = Endpoint::mtime();
-		$response = $this->queryRead($q);
-		xml_parse($this->_parserSparqlResult->getParser(),$response, true);		
-		$result = $this->_parserSparqlResult->getResult();	
-		if(! array_key_exists("result",$result)){
-			$message = "Error parsing SPARQL result:\n Message XML result (in theory) :>>>>>>>\n".$response."\n<<<<<<<<\n";
-			$error = $this->errorLog($q,null, $this->_endpoint,200,$message);
-			$this->addError($error);
-			return false;
+		$result = null;
+		switch($result_format)
+		{
+			case "json" :			
+				$response = $this->queryRead($q,"application/sparql-results+json");
+				$result = json_decode($response);
+				break;
+			case "row" :
+			case "raw" :
+			default: //rows		
+				$response = $this->queryRead($q);
+				xml_parse($this->_parserSparqlResult->getParser(),$response, true);		
+				$result = $this->_parserSparqlResult->getResult();
+				if(! array_key_exists("result",$result)){
+					$message = "Error parsing SPARQL result:\n Message XML result (in theory) :>>>>>>>\n".$response."\n<<<<<<<<\n";
+					$error = $this->errorLog($q,null, $this->_endpoint,200,$message);
+					$this->addError($error);
+					return false;
+				}
 		}
 		$result['query_time'] =   Endpoint::mtime() - $t1 ;
 		switch($result_format)
@@ -400,12 +411,27 @@ class Endpoint extends Base {
 			case "row" :
 				return $result["result"]["rows"][0];
 			case "raw" :
-				return $result["result"]["rows"][0][0];
+				return $result["result"]["rows"][0][0];				
+			case "json" :
 			default: //rows				
 				return $result;
 		}
 	}
-		
+/*
+	public function queryConstruct($q) {	
+		$t1 = Endpoint::mtime();
+		$result = null;
+					
+		$response = $this->queryRead($q,"text/turtle");
+		return $response;
+		$result = ParserTurtle::turtle_to_array($response,"");
+				
+		$result['query_time'] =   Endpoint::mtime() - $t1 ;
+					
+				return $result;
+	}
+	*/
+	
 	/**
 	* Send a request SPARQL of type select or ask to endpoint directly and output the response
 	* of server. If you want parse the result of this function, it's better and simpler

@@ -51,7 +51,7 @@ class ParserTurtle {
 		
 		if(preg_match("/^(\"(?:\\\"|[^\"])*\"|'(?:\\'|[^'])*')(?:\^\^([^\s]*))?$/i",$uri, $matches)){//<>
 			if(isset($matches[2])){
-				$result = $matches[1]."^^".ParserTurtle::relativeToExplicitURI($matches[2]);
+				$result = $matches[1]."^^".ParserTurtle::relativeToExplicitURI($matches[2],$prefix);
 			}else{
 				$result = $matches[1];
 			}

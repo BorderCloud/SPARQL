@@ -75,6 +75,9 @@ class ParserSparqlResult extends Base {
 					}elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." datatype"] == "http://www.w3.org/2001/XMLSchema#integer"
 						){
 						$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = intval($value);
+					}elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." datatype"] == "http://www.w3.org/2001/XMLSchema#boolean"
+						){
+						$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = $value === "true" ? true : false;
 					}else{						
 						$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = $value;
 					}
