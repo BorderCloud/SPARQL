@@ -63,7 +63,12 @@ class Curl
 	 */
 	function set_credentials($username,$password)
 	{
-		curl_setopt($this->ch, CURLOPT_USERPWD, "$username:$password");
+
+		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($this->ch, CURLOPT_USERPWD, $username.":".$password);
+		curl_setopt($this->ch, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+		curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, true);
 	}
 
 	/**

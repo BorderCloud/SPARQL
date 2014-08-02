@@ -224,6 +224,10 @@ class Endpoint extends Base {
 	 */
 	private $_nameParameterQueryWrite;
 	
+
+	private $_login;
+	private $_password;
+	
 	/** For Arc2 **/
 // 	private $_arc2_RemoteStore;
 // 	private $_arc2_Reader;
@@ -359,6 +363,42 @@ class Endpoint extends Base {
 	 */
 	public function getNameParameterQueryRead() {
 		return $this->_nameparameterQueryRead;
+	}
+
+	/**
+	 * Set the server login
+	 * @param string $login : server login
+	 * @access public
+	 */
+	public function setLogin($login) {
+		$this->_login = $login;
+	}
+	
+	/**
+	 * Get the server login
+	 * @return string $login : server login
+	 * @access public
+	 */
+	public function getLogin() {
+		return $this->_login;
+	}
+	
+	/**
+	 * Set the server password
+	 * @param string $password : server password
+	 * @access public
+	 */
+	public function setPassword($password) {
+		$this->_password = $password;
+	}
+	
+	/**
+	 * Get the server login
+	 * @return string $password : server password
+	 * @access public
+	 */
+	public function getPassword() {
+		return $this->_password;
 	}
 	
 	/**
@@ -568,6 +608,9 @@ class Endpoint extends Base {
 		$objCurl = new Curl();
 		if($this->_proxy_host != null && $this->_proxy_port != null){
 			$objCurl->set_proxy($this->_proxy_host.":".$this->_proxy_port);	
+		}
+		if($this->_login != null && $this->_password != null){
+			$objCurl->set_credentials($this->_login,$this->_password);
 		}
 		return $objCurl;
 	}
