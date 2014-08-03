@@ -122,7 +122,7 @@ class Curl
 	 * @return string data
 	 * @access public
     */
-	function send_post_data($url, $postdata, $arrayHeader=null, $ip=null, $timeout=10)
+	function send_post_data($url, $postdata, $arrayHeader=null, $ip=null, $timeout=600)
 	{
 		//set various curl options first
 		if($this->debug)

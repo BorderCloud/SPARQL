@@ -502,7 +502,7 @@ class Endpoint extends Base {
 	
 		if($code < 200 || $code >= 300)
 		{
-			$error = $this->errorLog($query,$data,$sUri,$code,$response);
+			$error = $this->errorLog($query,$data,$sUri,$code,$response. $client->get_error_msg() );
 			$this->addError($error);
 			return false;
 		}
