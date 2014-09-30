@@ -8,6 +8,7 @@ require_once("Curl.php");
 require_once("Net.php");
 require_once("Base.php");
 require_once("ParserSparqlResult.php");
+//require_once("ConversionMimetype.php");
 
 /**
  * Sparql HTTP Client for SPARQL1.1's Endpoint
@@ -492,7 +493,9 @@ class Endpoint extends Base {
 			$response = $client->send_post_data($sUri,$data);
 		}else{
 			$data = array($this->_nameParameterQueryRead =>   $query,
+			//"output" => ConversionMimetype::getShortnameOfMimetype($typeOutput), //possible fix for 4store/fuseki..
 			"Accept" => $typeOutput); //fix for sesame
+			//print_r($data);
 			$response = $client->send_post_data($sUri,$data,array('Accept: '.$typeOutput));
 		}		
 
@@ -530,6 +533,7 @@ class Endpoint extends Base {
 				$response = $client->send_post_data($sUri,$data);
 			}else{
 				$data = array($this->_nameParameterQueryWrite =>   $query,
+ 				//"output" => ConversionMimetype::getShortnameOfMimetype($typeOutput), //possible fix for 4store/fuseki...
 				"Accept" => $typeOutput); //fix for sesame
 				$response = $client->send_post_data($sUri,$data,array('Accept: '.$typeOutput));
 			}		
@@ -605,7 +609,7 @@ class Endpoint extends Base {
 	 * @access private
 	 */
 	private function initCurl(){
-		$objCurl = new Curl();
+		$objCurl = new Curl();//$this->_debug
 		if($this->_proxy_host != null && $this->_proxy_port != null){
 			$objCurl->set_proxy($this->_proxy_host.":".$this->_proxy_port);	
 		}
