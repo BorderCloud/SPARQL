@@ -7,7 +7,7 @@
 
 class ParserTurtle {
 
-	function turtle_to_array($turtle,$baseGraph){
+	static function turtle_to_array($turtle,$baseGraph,$idMD5 = false){
 		$tabResult = array();
 		$tabResult["prefix"] = array();
 		$tabResult["prefix"]["base"] = $baseGraph;
@@ -23,30 +23,33 @@ class ParserTurtle {
 				$namePrefix = $valMatches[1] == "" ? "empty" : $valMatches[1];
 				$tabResult["prefix"][$namePrefix] = $valMatches[2];
 			}elseif(preg_match("/^\s*(<[^\s]*>|[^\s]*:[^\s]+)\s*(.*)\s*\.$/is", $val[0], $valMatches)){
-							$object = ParserTurtle::relativeToExplicitURI($valMatches[1],$tabResult["prefix"]) ;
-							
-							preg_match_all("/\s*(a|<[^\s]*>|[^\s]*:[^\s]+)\s*((?:(?:<[^\s]*>|[^\s]*:[^\s]+|(?:\"(?:\\\\\"|[^\"])*\"|'(?:\\\\'|[^'])*')(?:\^\^[^\s]*)?|\s*),?)+\s*);?/is",$valMatches[2], $propertyMatches, PREG_SET_ORDER);
-							foreach ($propertyMatches as $propertyVal) {
-								$property ="";
-								if($propertyVal[1] == "a"){
-									$property = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"  ;
-								}else{
-									$property = ParserTurtle::relativeToExplicitURI($propertyVal[1],$tabResult["prefix"]) ;
-								}
-								preg_match_all("/(<[^\s]*>|[^\s]*:[^\s]+|(?:\"(?:\\\\\"|[^\"])*\"|'(?:\\\\'|[^'])*')(?:\^\^[^\s]*)?)\s*,?/is",$propertyVal[2], $valueMatches, PREG_SET_ORDER);
+                                $object = ParserTurtle::relativeToExplicitURI($valMatches[1],$tabResult["prefix"]) ;
 
-								foreach ($valueMatches as $valueVal) {		
-									$value = ParserTurtle::relativeToExplicitURI($valueVal[1],$tabResult["prefix"]) ;
-									//echo "s=>".$object." p=>".$property." o=>".$value."\n";
-									$tabResult["triples"][] = array("s"=>$object,"p"=>$property,"o"=>$value);
-								}
-							}
-						}
+                                preg_match_all("/\s*(a|<[^\s]*>|[^\s]*:[^\s]+)\s*((?:(?:<[^\s]*>|[^\s]*:[^\s]+|(?:\"(?:\\\\\"|[^\"])*\"|'(?:\\\\'|[^'])*')(?:\^\^[^\s]*)?|\s*),?)+\s*);?/is",$valMatches[2], $propertyMatches, PREG_SET_ORDER);
+                                foreach ($propertyMatches as $propertyVal) {
+                                        $property ="";
+                                        if($propertyVal[1] == "a"){
+                                                $property = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"  ;
+                                        }else{
+                                                $property = ParserTurtle::relativeToExplicitURI($propertyVal[1],$tabResult["prefix"]) ;
+                                        }
+                                        preg_match_all("/(<[^\s]*>|[^\s]*:[^\s]+|(?:\"(?:\\\\\"|[^\"])*\"|'(?:\\\\'|[^'])*')(?:\^\^[^\s]*)?)\s*,?/is",$propertyVal[2], $valueMatches, PREG_SET_ORDER);
+
+                                        foreach ($valueMatches as $valueVal) {		
+                                                $value = ParserTurtle::relativeToExplicitURI($valueVal[1],$tabResult["prefix"]) ;
+                                                //echo "s=>".$object." p=>".$property." o=>".$value."\n";
+                                                if($idMD5)
+                                                    $tabResult["triples"][md5($object.$property.$value)] = array("s"=>$object,"p"=>$property,"o"=>$value);
+                                                else
+                                                    $tabResult["triples"][] = array("s"=>$object,"p"=>$property,"o"=>$value);
+                                        }
+                                }
+                        }
 		}
 		return $tabResult;
 	}
 	
-	function relativeToExplicitURI($uri,$prefix){
+	static function relativeToExplicitURI($uri,$prefix){
 		$result = $uri;
 		
 		if(preg_match("/^(\"(?:\\\"|[^\"])*\"|'(?:\\'|[^'])*')(?:\^\^([^\s]*))?$/i",$uri, $matches)){//<>
@@ -60,7 +63,7 @@ class ParserTurtle {
 			$result = "<".$prefix["base"].">";
 		}elseif(preg_match("/^<#([^:]+)>$/i",$uri, $matches)){//<#truc>
 			$result = "<".$prefix["base"].$matches[1].">";
-		}elseif(preg_match("/^<#([^:]+)>$/i",$uri, $matches)){//<truc>
+		}elseif(preg_match("/^<([^<>]+)>$/i",$uri, $matches)){//<truc>
 			$len = strlen( $prefix["base"]);
 			$prefixbase = substr( $prefix["base"], 0, strrpos ($prefix["base"] , "/"));
 			$result = "<".$prefixbase.$matches[1].">";
@@ -72,7 +75,7 @@ class ParserTurtle {
 		return $result;
 	}
 	
-	function mySortTriples($itm1, $itm2){
+	static function mySortTriples($itm1, $itm2){
 		if($itm1["s"] > $itm2["s"]){
 			return 1;
 		}
@@ -100,12 +103,47 @@ class ParserTurtle {
 		}
 	}
 	
-	function sortTriples($arrayTurtle){
-		$result = $arrayTurtle;		
-		array_multisort($result["prefix"],SORT_ASC,SORT_STRING);
-		
-		usort($result["triples"], 'ParserTurtle::mySortTriples');	
-		
-		return $result;		
-	}	
+    static function sortTriples($arrayTurtle){
+            $result = $arrayTurtle;		
+            array_multisort($result["prefix"],SORT_ASC,SORT_STRING);
+
+            usort($result["triples"], 'ParserTurtle::mySortTriples');	
+
+            return $result;		
+    }	
+        
+    static function getKey($arrayTurtle, $s,$p){
+        $result = null;
+        if(!EMPTY($arrayTurtle)){
+            foreach ($arrayTurtle["triples"] as $key=>$triple) {
+               if("<".$s.">" == $triple["s"] && "<".$p.">" == $triple["p"] ){
+                      $result = $key;
+                      break;
+                }
+            }
+        }
+        return $key;
+    }
+    static function getTriple($arrayTurtle, $s,$p){
+        $result = null;
+        if(!EMPTY($arrayTurtle)){
+            foreach ($arrayTurtle["triples"] as $key=>$triple) {
+               if("<".$s.">" == $triple["s"] && "<".$p.">" == $triple["p"] ){
+                      $result = $triple;
+                      preg_match( '@^(?:<tel\:([^<>]+)>|<mailto\:([^<>]+)>|<([^<>]+)>|([^\"<>]+)|\"(.*)\"[^\"]*)$@i',$triple["o"], $matches);
+//\<mailto\:([^\<\>])+\>|\<([^\<\>])+\>|                      
+//print_r($triple["o"]);
+                      //print_r($matches);
+                      foreach ($matches as $key=>$match) {
+                        if($key != 0 && ! EMPTY($match)){
+                          $result["value"] = $match;
+                          break;
+                        }
+                      }
+                      break;
+                }
+            }
+        }
+        return $result;
+    }
 }
