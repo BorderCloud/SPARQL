@@ -68,6 +68,8 @@ class ParserSparqlResult extends Base {
 				
 			if($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"] == "uri"){
 				$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = trim($this->_value);
+                        }elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"] == "bnode"){
+                                $this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = trim($this->_value);
 			}elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"] == "literal"){
 				$value = trim($this->_value);
 				if(array_key_exists($this->_cellCurrent." datatype",$this->_result['result']['rows'][$this->_rowCurrent])){
