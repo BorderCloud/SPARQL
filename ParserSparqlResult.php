@@ -95,56 +95,119 @@ class ParserSparqlResult extends Base {
    			$this->_cellCurrent = null;
    			$this->_value = "";
    		}
-   }
+    }
 
-   //callback for the content within an element
-   function contentHandler($parser_object,$data)
-   {
-	   	if($this->_cellCurrent != null){
-		   //	echo "DATA". $data." - ".$this->_cellCurrent."\n";
-		   	$this->_value .= $data;
-	   	}
-   }
+    //callback for the content within an element
+    function contentHandler($parser_object,$data)
+    {
+		  if($this->_cellCurrent != null){
+		    //	echo "DATA". $data." - ".$this->_cellCurrent."\n";
+			  $this->_value .= $data;
+		  }
+    }
    
-	function sortResult($array){
-		$result = $array;				
-		if(isset($result['result']['rows']))
-			usort($result['result']['rows'], 'ParserSparqlResult::mySortResult');
-		return $result;		
-	}
-	
-	function mySortResult($row1, $row2){	
-		$result = 0;
-		$countTab = 0;
-		if( count($row1) > count($row2)){
-			$countTab = count($row1);
-		}else{
-			$countTab = count($row2);
-		}
+    function sortResult($array){
+	    $result = $array;				
+	    if(isset($result['result']['rows']))
+		    usort($result['result']['rows'], 'ParserSparqlResult::mySortResult');
+	    return $result;		
+    }
+    
+    function mySortResult($row1, $row2){	
+	    $result = 0;
+	    $countTab = 0;
+	    if( count($row1) > count($row2)){
+		    $countTab = count($row1);
+	    }else{
+		    $countTab = count($row2);
+	    }
+	    
+	    for($i=0; $i < $countTab; $i++){
+		    if((!isset($row1[$i])) || (!isset($row2[$i]))){
+			    if(isset($row1[$i]) && isset($row2[$i])){//impossible in theory
+				    $result =  0;
+				    break;
+			    }elseif(!isset($row1[$i])){
+				    $result =  -1;
+				    break;
+			    }elseif(!isset($row2[$i])){
+				    $result =  1;
+				    break;
+			    }
+		    }
+		    else if($row1[$i] < $row2[$i]){
+			    $result =  1;
+			    break;
+		    }
+		    else if($row1[$i] < $row2[$i]){
+			    $result =  -1;
+			    break;
+		    }
+	    }
+	    return $result;
+    }
+    
+    public static function array_diff_assoc_unordered( $rs1,  $rs2) {
+      $difference=array();
+      //A/ Check the variables lists in the header are the same.
+      if(! isset($rs1['result']['variables']) && ! isset($rs2['result']['variables'])){
+	  return $difference; //return true ;
+      }elseif (! isset($rs1['result']['variables']) || ! isset($rs2['result']['variables']) ) {
+	  $difference[1]=$rs1['result']['variables'];
+	  $difference[2]=$rs2['result']['variables'];
+	  return $difference; //return false ;
+      }
+      
+      $difference=array_diff($rs1,$rs2);
+      if (count($difference) != 0) {
+	  return $difference; //return false ;
+      }
+      
+      //B/ Check the result set have the same number of rows.
+      if(count($rs1['result']['rows']) != count($rs2['result']['rows'])) {
+	  $difference[1]="Nb rows :".count($rs1['result']['rows']);
+	  $difference[2]="Nb rows :".count($rs2['result']['rows']);
+	  return $difference; //return false ;
+      }
+
+      //C/ Pick a row from the test results, scan the expected results
+      //   to find a row with same variable/value bindings, and remove
+      //   from the expected results. If all test rows, match then
+      //   (because of B) the result sets have the same rows.
+      //   
+      //return equivalent(convert(rs1), convert(rs2), new BNodeIso(NodeUtils.sameValue)) ;
+      $clone1 = $rs1['result']['rows'];
+      $clone2 = $rs2['result']['rows'];
+      
+     // echo "AVANT";
+	//  print_r($clone1);
+	//  print_r($clone2);
+      foreach ($rs1['result']['rows'] as $key1=>&$value1) {
+	  $tmpclone2 = $clone2;
+	    foreach ($tmpclone2 as $key2=>&$value2) {
 		
-		for($i=0; $i < $countTab; $i++){
-			if((!isset($row1[$i])) || (!isset($row2[$i]))){
-				if(isset($row1[$i]) && isset($row2[$i])){//impossible in theory
-					$result =  0;
-					break;
-				}elseif(!isset($row1[$i])){
-					$result =  -1;
-					break;
-				}elseif(!isset($row2[$i])){
-					$result =  1;
-					break;
-				}
-			}
-			else if($row1[$i] < $row2[$i]){
-				$result =  1;
-				break;
-			}
-			else if($row1[$i] < $row2[$i]){
-				$result =  -1;
-				break;
-			}
-		}
-		return $result;
-	}
-	
+              //echo "-------------";
+	      //print_r($value1);
+	      //print_r($value2);
+	      if(count(array_diff_assoc($value1,$value2)) == 0 && 
+		  count(array_diff_assoc($value2,$value1)) == 0 ){
+		    unset($clone1[$key1]);
+		    unset($clone2[$key2]);
+		    break;
+	      }
+	    }
+            //echo "-------------APRES";
+	    //print_r($clone1);
+	    //print_r($clone2);
+      }
+
+      if(count($clone1) != 0 || 
+	  count($clone2) != 0 ){
+	  $difference[1]=$clone1;
+	  $difference[2]=$clone2;
+	  return $difference; //return false ;
+      }
+
+      return $difference;
+  }
 }

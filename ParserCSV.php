@@ -7,7 +7,8 @@
 
 class ParserCSV {
 
-	function csv_to_array($csv, $delimiter = ',', $enclosure = '"', $escape = '\\', $terminator = "\n") { 
+	function csv_to_array($csv, $delimiter = '\t', $enclosure = '\'', $escape = '\\', $terminator = "\n") { 
+	
 		$r = array();
 		//$string = utf8_encode($csv);
 		//echo mb_detect_encoding($names);
@@ -19,13 +20,21 @@ class ParserCSV {
 		foreach ($rows as $row) { 
 			if (trim($row)) { 
 				$values =str_getcsv($row,$delimiter,$enclosure,$escape) ;  
+				
 				if (!$values) $values = array_fill(0,$nc,null); 
 				
 				$tabTemp = array(); 				
 				//array_combine($names,$values);
 				foreach($names as $key=>$nameCol){ 
 					if(isset($values[$key])){
-						$tabTemp[$nameCol] = $values[$key]; 
+					
+					    $value = $values[$key]; 
+					    if (ToolsConvert::isTrueFloat($value)) {
+						$value = floatval($value);
+					    } elseif (is_int($value)) {
+						$value = intval($value);
+					    }
+					    $tabTemp[$nameCol] = $value; 
 					}else{						
 						$tabTemp[$nameCol] = NULL; 
 					}
@@ -76,4 +85,6 @@ class ParserCSV {
 		usort($result, 'ParserCSV::mySortAllColumn');
 		return $result;
 	}
+	
+	 
 } 
