@@ -63,38 +63,42 @@ class ParserSparqlResult extends Base {
    //callback for the end of each element
    function endElement($parser_object, $elementname) {
     	if($elementname == "binding"){
-			if(!isset($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"]))
-				$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"]=NULL;
-				
-			if($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"] == "uri"){
-				$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = trim($this->_value);
-                        }elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"] == "bnode"){
-                                $this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = trim($this->_value);
-			}elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"] == "literal"){
-				$value = trim($this->_value);
-				if(array_key_exists($this->_cellCurrent." datatype",$this->_result['result']['rows'][$this->_rowCurrent])){
-					if($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." datatype"] == "http://www.w3.org/2001/XMLSchema#double" ||
-						$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." datatype"] == "http://www.w3.org/2001/XMLSchema#decimal" 
-						){
-						$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = floatval($value);
-					}elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." datatype"] == "http://www.w3.org/2001/XMLSchema#integer"
-						){
-						$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = intval($value);
-					}elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." datatype"] == "http://www.w3.org/2001/XMLSchema#boolean"
-						){
-						$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = $value === "true" ? true : false;
-					}else{						
-						$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = $value;
-					}
-				}else{
+    	
+		if(strlen(trim($this->_value)) == 0)
+		    return;
+		
+		if(!isset($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"]))
+			$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"]=NULL;
+			
+		if($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"] == "uri"){
+			$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = trim($this->_value);
+		}elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"] == "bnode"){
+			$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = trim($this->_value);
+		}elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." type"] == "literal"){
+			$value = trim($this->_value);
+			if(array_key_exists($this->_cellCurrent." datatype",$this->_result['result']['rows'][$this->_rowCurrent])){
+				if($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." datatype"] == "http://www.w3.org/2001/XMLSchema#double" ||
+					$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." datatype"] == "http://www.w3.org/2001/XMLSchema#decimal" 
+					){
+					$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = floatval($value);
+				}elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." datatype"] == "http://www.w3.org/2001/XMLSchema#integer"
+					){
+					$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = intval($value);
+				}elseif($this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent." datatype"] == "http://www.w3.org/2001/XMLSchema#boolean"
+					){
+					$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = $value === "true" ? true : false;
+				}else{						
 					$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = $value;
 				}
 			}else{
-				$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = $this->_value;
+				$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = $value;
 			}
-   			$this->_cellCurrent = null;
-   			$this->_value = "";
-   		}
+		}else{
+			$this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent] = $this->_value;
+		}
+		$this->_cellCurrent = null;
+		$this->_value = "";
+	  }
     }
 
     //callback for the content within an element
@@ -155,11 +159,6 @@ class ParserSparqlResult extends Base {
       }elseif (! isset($rs1['result']['variables']) || ! isset($rs2['result']['variables']) ) {
           $difference[1]=$rs1['result']['variables'];
           $difference[2]=$rs2['result']['variables'];
-          return $difference; //return false ;
-      }
-
-      $difference=array_diff($rs1,$rs2);
-      if (count($difference) != 0) {
           return $difference; //return false ;
       }
 
