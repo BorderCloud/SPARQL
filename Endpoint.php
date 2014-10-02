@@ -8,6 +8,7 @@ require_once("Curl.php");
 require_once("Net.php");
 require_once("Base.php");
 require_once("ToolsConvert.php");
+require_once("ToolsBlankNode.php");
 require_once("ParserSparqlResult.php");
 //require_once("ConversionMimetype.php");
 

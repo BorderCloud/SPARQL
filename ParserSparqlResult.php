@@ -147,7 +147,7 @@ class ParserSparqlResult extends Base {
 	    return $result;
     }
     
-    public static function array_diff_assoc_unordered( $rs1,  $rs2) {
+    public static function compare($rs1,$rs2,$ordered=false) {
       $difference=array();
       //A/ Check the variables lists in the header are the same.
       if(! isset($rs1['result']['variables']) && ! isset($rs2['result']['variables'])){
@@ -198,12 +198,17 @@ class ParserSparqlResult extends Base {
           //print_r($clone1WithoutBlanknodes);
           //print_r($clone2WithoutBlanknodes);
 //1.2 compare
-      $difference =  self::sub_array_diff_assoc_unordered( $clone1WithoutBlanknodes, $clone2WithoutBlanknodes) ;
+	if($ordered){
+		$difference =  ToolsBlankNode::array_diff_assoc_recursive( $clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
+	}else{
+		$difference =  ToolsBlankNode::array_diff_assoc_unordered( $clone1WithoutBlanknodes, $clone2WithoutBlanknodes) ;
+	}
 
-
+      //Check if there are blank nodes
       if((count($bnodesInRs1) == 0 && count($bnodesInRs2) == 0 )  || count($difference) != 0)
           return $difference;
 
+      //With blank nodes
         $bnodesInRs1=array_values(array_unique($bnodesInRs1));
         $bnodesInRs2=array_values(array_unique($bnodesInRs2));
         if(count($bnodesInRs1) != count($bnodesInRs2)) {
@@ -215,14 +220,11 @@ class ParserSparqlResult extends Base {
         //echo "BLANKNODE\n";     
         //print_r($bnodesInRs1);
         //print_r($bnodesInRs2);
-
-      //$difference =  self::sub_array_diff_assoc_unordered( $rs1['result']['rows'], $rs2['result']['rows']) ;
-
       $clone1 = $rs1['result']['rows'];
         //    print_r($clone1);
       $clone2 = $rs2['result']['rows'];
       // 2.Repeat, for each graph:
-      $arrayPermutationsBnode = self::AllPermutations($bnodesInRs2);
+      $arrayPermutationsBnode = ToolsBlankNode::AllPermutations($bnodesInRs2);
         //echo "PERMUTATION\n";
         //print_r($arrayPermutationsBnode );      
         //exit();
@@ -240,7 +242,12 @@ class ParserSparqlResult extends Base {
           }
 
             //print_r($clone2);
-          $difference =  self::sub_array_diff_assoc_unordered( $clone1,$clone2) ;
+          //$difference =  self::sub_array_diff_assoc_unordered( $clone1,$clone2) ;          
+	    if($ordered){
+		    $difference =  ToolsBlankNode::array_diff_assoc_recursive($clone1,$clone2);
+	    }else{
+		    $difference =  ToolsBlankNode::array_diff_assoc_unordered($clone1,$clone2) ;
+	    }
           if(count($difference) == 0){
                 return $difference; //true
           }
@@ -248,7 +255,7 @@ class ParserSparqlResult extends Base {
 
       return $difference;
   }
-
+/*
     private static function sub_array_diff_assoc_unordered( $rows1,  $rows2) {
         $difference=array();
 
@@ -300,34 +307,6 @@ class ParserSparqlResult extends Base {
         }
         return $difference;
       }
-
-      private static function AllPermutations($set)
-        {
-                $solutions=array();
-                $n=count($set);
-                $p=array_keys($set);
-                $i=1;
-
-                while ($i<$n)
-                {
-                  if ($p[$i]>0){
-                        $p[$i]--;
-                        $j=0;
-                        if ($i%2==1)
-                                $j=$p[$i];
-                        //swap
-                        $tmp=$set[$j];
-                        $set[$j]=$set[$i];
-                        $set[$i]=$tmp;
-                        $i=1;
-                        $solutions[]=$set;
-                   }
-                   elseif ($p[$i]==0){
-                        $p[$i]=$i;
-                        $i++;
-                   }
-                }
-                return $solutions;
-        }
+      */
 }
 
