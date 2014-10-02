@@ -49,7 +49,7 @@ class ParserTurtle {
 		return $tabResult;
 	}
 	
-	static function relativeToExplicitURI($uri,$prefix){
+	static function relativeToExplicitURI($uri,$prefix){		
 		$result = $uri;
 		if(preg_match("/^(\"(?:\\\"|[^\"])*\"|'(?:\\'|[^'])*')(?:\^\^([^\s]*))?$/i",$uri, $matches)){//<>
 			if(isset($matches[2])){
@@ -78,7 +78,7 @@ class ParserTurtle {
 			$result = "<".$prefix["base"].">";
 		}elseif(preg_match("/^<#([^:]+)>$/i",$uri, $matches)){//<#truc>
 			$result = "<".$prefix["base"].$matches[1].">";
-		}elseif(preg_match("/^<([^<>]+)>$/i",$uri, $matches)){//<truc>
+		}elseif(preg_match("/^<([^:]+)>$/i",$uri, $matches)){//<truc>
 			$len = strlen( $prefix["base"]);
 			$prefixbase = substr( $prefix["base"], 0, strrpos ($prefix["base"] , "/"));
 			$result = "<".$prefixbase.$matches[1].">";
