@@ -33,7 +33,7 @@ class ParserTurtle {
                                         }else{
                                                 $property = ParserTurtle::relativeToExplicitURI($propertyVal[1],$tabResult["prefix"]) ;
                                         }
-                                        preg_match_all("/(<[^\s]*>|[^\s]*:[^\s]+|(?:\"(?:\\\\\"|[^\"])*\"|'(?:\\\\'|[^'])*')(?:\^\^[^\s]*)?)\s*,?/is",$propertyVal[2], $valueMatches, PREG_SET_ORDER);
+                                        preg_match_all("/(<[^\s]*>|[^\s]*:[^\s\.\;]+|(?:\"(?:\\\\\"|[^\"])*\"|'(?:\\\\'|[^'])*')(?:\^\^[^\s\.\;]*)?)\s*,?/is",$propertyVal[2], $valueMatches, PREG_SET_ORDER);
 
                                         foreach ($valueMatches as $valueVal) {		
                                                 $value = ParserTurtle::relativeToExplicitURI($valueVal[1],$tabResult["prefix"]) ;
