@@ -6,6 +6,25 @@
 */
 class ToolsBlankNode {
 
+      public static function removeDuplicate($set)
+        {
+	  $find = false;
+	  $result = array();
+	  foreach ($set as $key1=>$value1) {
+	    $find = false;
+	    foreach ($result as $key2=>$value2) {
+	      if(count(array_diff_assoc($value1,$value2)) == 0 ){
+		$find = true;
+		break;
+	      }
+	    }
+	    if(! $find)
+	    	$result[] = $value1;
+
+	  }
+	  return $result;
+        }
+        
       public static function AllPermutations($set)
         {
                 $solutions=array();

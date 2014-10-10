@@ -170,10 +170,18 @@ class ParserTurtle {
         return $result;
     }
     
-        public static function compare($rs1,$rs2,$ordered=false) {
+    public static function compare($rs1,$rs2,$ordered=false,$distinct=false) {
       $difference=array();
-$rs1Triples = $rs1["triples"];
-      $rs2Triples = $rs2["triples"];
+      $rs1Triples = NULL;
+      $rs2Triples = NULL;
+      
+      if($distinct){
+	$rs1Triples = $rs1["triples"];
+	$rs2Triples = $rs2["triples"];
+      }else{
+	$rs1Triples = ToolsBlankNode::removeDuplicate($rs1["triples"]);
+	$rs2Triples = ToolsBlankNode::removeDuplicate($rs2["triples"]);
+      }      
 
       //B/ Check the result set have the same number of rows.
       if(count($rs1Triples) != count($rs2Triples)) {

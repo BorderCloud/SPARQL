@@ -151,7 +151,7 @@ class ParserSparqlResult extends Base {
 	    return $result;
     }
     
-    public static function compare($rs1,$rs2,$ordered=false) {
+    public static function compare($rs1,$rs2,$ordered=false,$distinct=false) {
       $difference=array();
       //A/ Check the variables lists in the header are the same.
       if(! isset($rs1['result']['variables']) && ! isset($rs2['result']['variables'])){
@@ -167,8 +167,16 @@ class ParserSparqlResult extends Base {
       
 // 1.Compare graph sizes and all statements without blank nodes. If they do not match, fail.
 //1.1 remove blank nodes
-     $clone1WithoutBlanknodes = $rs1['result']['rows'];
-     $clone2WithoutBlanknodes = $rs2['result']['rows'];
+      $clone1WithoutBlanknodes = NULL;
+      $clone2WithoutBlanknodes = NULL;
+      if($distinct){
+	$clone1WithoutBlanknodes = $rs1['result']['rows'];
+        $clone2WithoutBlanknodes = $rs2['result']['rows'];
+      }else{
+	$clone1WithoutBlanknodes = ToolsBlankNode::removeDuplicate($rs1['result']['rows']);
+	$clone2WithoutBlanknodes = ToolsBlankNode::removeDuplicate($rs2['result']['rows']);
+      } 
+     
      $bnodesInRs1=array();
      $bnodesInRs2=array();
 

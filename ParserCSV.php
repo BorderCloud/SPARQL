@@ -86,7 +86,7 @@ class ParserCSV {
 		return $result;
 	}
 	
-      public static function compare($rs1,$rs2,$ordered=false) {
+      public static function compare($rs1,$rs2,$ordered=false,$distinct=false) {
 	$difference=array();
 	//A/ Check the variables lists in the header are the same.
 	if(count($rs1) ==0 && count($rs2) ==0){
@@ -102,9 +102,17 @@ class ParserCSV {
 	//ref : http://blog.datagraph.org/2010/03/rdf-isomorphism
 	
   // 1.Compare graph sizes and all statements without blank nodes. If they do not match, fail.
-  //1.1 remove blank nodes
-      $clone1WithoutBlanknodes = $rs1;
-      $clone2WithoutBlanknodes = $rs2;
+  //1.1 remove blank nodes      
+      $clone1WithoutBlanknodes = NULL;
+      $clone2WithoutBlanknodes = NULL;
+      if($distinct){
+	$clone1WithoutBlanknodes = $rs1;
+        $clone2WithoutBlanknodes = $rs2;
+      }else{
+	$clone1WithoutBlanknodes = ToolsBlankNode::removeDuplicate($rs1);
+	$clone2WithoutBlanknodes = ToolsBlankNode::removeDuplicate($rs2);
+      } 
+     
       $bnodesInRs1=array();
       $bnodesInRs2=array();
       $patternBlankNode = '/^_:/';
