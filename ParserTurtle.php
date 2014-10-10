@@ -13,7 +13,8 @@ class ParserTurtle {
 		$tabResult["prefix"]["base"] = $baseGraph;
 		$tabResult["triples"] = array();
 		
-		preg_match_all("/((?:(?:\"|').*(?:\"|')(?:\^\^[^\s]*)?|a|<[^\s]*>|[^\s]*:[^\s]+|;|,|@prefix\s*[^\s]*\s*:\s*<[^\s<>]+>|\s*\r?\n?)+\s\.)/i",$turtle, $matches, PREG_SET_ORDER);
+		preg_match_all("/((?:(?:\"|').*(?:\"|')(?:\^\^[^\s]*)?|a|<[^\s]*>|[^\s]*:[^\s]+|;|,|@prefix\s*[^\s]*\s*:\s*<[^\s<>]+>|\s*\r?\n?)+\s?\.)/i",$turtle, $matches, PREG_SET_ORDER);
+
 		foreach ($matches as $val) {
 		//// http://answers.semanticweb.com/questions/2025/what-is-the-meaning-of-base-and-prefix-in-turtle-documents
 		   
@@ -24,17 +25,16 @@ class ParserTurtle {
 				$tabResult["prefix"][$namePrefix] = $valMatches[2];
 			}elseif(preg_match("/^\s*(<[^\s]*>|[^\s]*:[^\s]+)\s*(.*)\s*\.$/is", $val[0], $valMatches)){
                                 $object = ParserTurtle::relativeToExplicitURI($valMatches[1],$tabResult["prefix"]) ;
-
-                                preg_match_all("/\s*(a|<[^\s]*>|[^\s]*:[^\s]+)\s*((?:(?:<[^\s]*>|[^\s]*:[^\s]+|(?:\"(?:\\\\\"|[^\"])*\"|'(?:\\\\'|[^'])*')(?:\^\^[^\s]*)?|\s*),?)+\s*);?/is",$valMatches[2], $propertyMatches, PREG_SET_ORDER);
+                                preg_match_all("/\s*(a|<[^\s\,\;]*>|[^\s]*:[^\s\;]+)\s*((?:(?:<[^\s\,\;]*>|[^\s]*:[^\s\;]+|(?:\"(?:\\\\\"|[^\"])*\"|'(?:\\\\'|[^'])*')(?:\^\^[^\s\;]*)?|\s*),?)+\s*);?/is",$valMatches[2], $propertyMatches, PREG_SET_ORDER);
                                 foreach ($propertyMatches as $propertyVal) {
+                                
                                         $property ="";
                                         if($propertyVal[1] == "a"){
                                                 $property = "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>"  ;
                                         }else{
                                                 $property = ParserTurtle::relativeToExplicitURI($propertyVal[1],$tabResult["prefix"]) ;
                                         }
-                                        preg_match_all("/(<[^\s]*>|[^\s]*:[^\s\.\;]+|(?:\"(?:\\\\\"|[^\"])*\"|'(?:\\\\'|[^'])*')(?:\^\^[^\s\.\;]*)?)\s*,?/is",$propertyVal[2], $valueMatches, PREG_SET_ORDER);
-
+                                        preg_match_all("/(<[^\s\,\;]*>|[^\s]*:[^\s\,]+|(?:\"(?:\\\\\"|[^\"])*\"|'(?:\\\\'|[^'])*')(?:\^\^[^\s\,]*)?)\s*,?/is",$propertyVal[2], $valueMatches, PREG_SET_ORDER);
                                         foreach ($valueMatches as $valueVal) {		
                                                 $value = ParserTurtle::relativeToExplicitURI($valueVal[1],$tabResult["prefix"]) ;
                                                 //echo "s=>".$object." p=>".$property." o=>".$value."\n";
