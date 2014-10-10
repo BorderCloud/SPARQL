@@ -216,41 +216,42 @@ class ParserSparqlResult extends Base {
             return $difference; //return false ;
         }
 
-        //echo "BLANKNODE\n";     
-        //print_r($bnodesInRs1);
-        //print_r($bnodesInRs2);
-      $clone1 = $rs1['result']['rows'];
-        //    print_r($clone1);
-      $clone2 = $rs2['result']['rows'];
-      // 2.Repeat, for each graph:
-      $arrayPermutationsBnode = ToolsBlankNode::AllPermutations($bnodesInRs2);
-        //echo "PERMUTATION\n";
-        //print_r($arrayPermutationsBnode );      
-        //exit();
-        foreach ( $arrayPermutationsBnode as $permute) {
-                //print_r($permute);
+// 	echo "BLANKNODE\n";     
+// 	print_r($bnodesInRs1);
+// 	print_r($bnodesInRs2);
+	$clone1 = $rs1['result']['rows'];
+	//    print_r($clone1);
+	//$clone2 = $rs2['result']['rows'];
+	// 2.Repeat, for each graph:
+	$arrayPermutationsBnode = ToolsBlankNode::AllPermutations($bnodesInRs2);
+	//echo "PERMUTATION\n";
+	//print_r($arrayPermutationsBnode );      
+	// exit();
+	foreach ( $arrayPermutationsBnode as $permute) {
+	    $clone2 = $rs2['result']['rows'];
 
-          foreach ( $clone2 as $key=>&$row) {
-            $arrayVariableTypeBnode = array_keys( $row , "bnode") ;
-            foreach ($arrayVariableTypeBnode as $variableTypeBnode) {
-                  $variableArray = split(" ",$variableTypeBnode);
-                  $variable=$variableArray[0];
+	  //print_r($clone2);
+	  foreach ( $clone2 as $key=>&$row) {
+	    $arrayVariableTypeBnode = array_keys( $row , "bnode") ;
+	    foreach ($arrayVariableTypeBnode as $variableTypeBnode) {
+		  $variableArray = split(" ",$variableTypeBnode);
+		  $variable=$variableArray[0];
 
-                  $row[$variable] = $bnodesInRs1[array_search($row[$variable] ,$permute)];
-              }
-          }
-
-            //print_r($clone2);
-          //$difference =  self::sub_array_diff_assoc_unordered( $clone1,$clone2) ;          
-	    if($ordered){
-		    $difference =  ToolsBlankNode::array_diff_assoc_recursive($clone1,$clone2);
-	    }else{
-		    $difference =  ToolsBlankNode::array_diff_assoc_unordered($clone1,$clone2) ;
-	    }
-          if(count($difference) == 0){
-                return $difference; //true
-          }
-      }
+		  $row[$variable] = $bnodesInRs1[array_search($row[$variable] ,$permute)];
+	      }
+	  }
+	    //print_r($clone2);
+	    //$difference =  self::sub_array_diff_assoc_unordered( $clone1,$clone2) ;          
+	  if($ordered){
+		  $difference =  ToolsBlankNode::array_diff_assoc_recursive($clone1,$clone2);
+	  }else{
+		  $difference =  ToolsBlankNode::array_diff_assoc_unordered($clone1,$clone2) ;
+	  }
+	  
+	  if(count($difference) == 0){
+		return $difference; //true
+	  }
+	}
 
       return $difference;
   }

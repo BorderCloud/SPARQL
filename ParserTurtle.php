@@ -239,8 +239,7 @@ $rs1Triples = $rs1["triples"];
         //print_r($bnodesInRs1);
         //print_r($bnodesInRs2);
       $clone1 = $rs1Triples;
-        //    print_r($clone1);
-      $clone2 = $rs2Triples;
+        //    print_r($clone1);      
       // 2.Repeat, for each graph:
       $arrayPermutationsBnode = ToolsBlankNode::AllPermutations($bnodesInRs2);
         //echo "PERMUTATION\n";
@@ -248,7 +247,7 @@ $rs1Triples = $rs1["triples"];
         //exit();
         foreach ( $arrayPermutationsBnode as $permute) {
                 //print_r($permute);
-
+	  $clone2 = $rs2Triples;
           foreach ( $clone2 as $key=>&$row) {
             $arrayVariableTypeBnode = array_keys( $row , "bnode") ;
             foreach ($arrayVariableTypeBnode as $variableTypeBnode) {
@@ -260,7 +259,7 @@ $rs1Triples = $rs1["triples"];
           }
 
             //print_r($clone2);
-          //$difference =  self::sub_array_diff_assoc_unordered( $clone1,$clone2) ;          
+            //$difference =  self::sub_array_diff_assoc_unordered( $clone1,$clone2) ;          
 	    if($ordered){
 		    $difference =  ToolsBlankNode::array_diff_assoc_recursive($clone1,$clone2);
 	    }else{

@@ -158,7 +158,7 @@ class ParserCSV {
 	  
 	$clone1 = $rs1;
 // 	    print_r($clone1);
-	$clone2 = $rs2;
+	
 	// 2.Repeat, for each graph:
 	$arrayPermutationsBnode = ToolsBlankNode::AllPermutations($bnodesInRs2);
 	  //echo "PERMUTATION\n";
@@ -166,7 +166,7 @@ class ParserCSV {
 	  //exit();
 	  foreach ( $arrayPermutationsBnode as $permute) {
 // 		  print_r($permute);
-
+	    $clone2 = $rs2;
 	    foreach ( $clone2 as $key=>&$row) {
 	      $arrayVariableTypeBnode = array_keys( $row , "bnode") ;
 	      foreach ($arrayVariableTypeBnode as $variableTypeBnode) {
