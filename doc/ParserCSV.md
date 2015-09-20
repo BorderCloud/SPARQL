@@ -77,3 +77,25 @@ mixed ParserCSV::\ParserCSV::sortTable()($array)
 * $array **mixed**
 
 
+
+### \ParserCSV::compare()
+
+```
+mixed ParserCSV::\ParserCSV::compare()($rs1, $rs2, $ordered, $distinct)
+```
+
+
+
+
+
+* Visibility: **public**
+* This method is **static**.
+
+#### Arguments
+
+* $rs1 **mixed**
+* $rs2 **mixed**
+* $ordered **mixed**
+* $distinct **mixed**
+
+

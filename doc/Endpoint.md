@@ -238,7 +238,7 @@ in the constructor set the proxy_host if necessary
 ### $_proxy_port
 
 ```
-private int $_proxy_port
+private integer $_proxy_port
 ```
 
 in the constructor set the proxy_port if necessary
@@ -267,7 +267,7 @@ Parser of XML result
 private string $_nameParameterQueryRead
 ```
 
-Name of parameter HTTP GET to send a query SPARQL to read data.
+Name of parameter HTTP to send a query SPARQL to read data.
 
 
 
@@ -280,7 +280,46 @@ Name of parameter HTTP GET to send a query SPARQL to read data.
 private string $_nameParameterQueryWrite
 ```
 
-Name of parameter HTTP POST to send a query SPARQL to write data.
+Name of parameter HTTP to send a query SPARQL to write data.
+
+
+
+* Visibility: **private**
+
+
+### $_MethodHTTP
+
+```
+private string $_MethodHTTP
+```
+
+Method HTTP to send a query SPARQL to read data.
+
+
+
+* Visibility: **private**
+
+
+### $_login
+
+```
+private mixed $_login
+```
+
+
+
+
+
+* Visibility: **private**
+
+
+### $_password
+
+```
+private mixed $_password
+```
+
+
 
 
 
@@ -336,6 +375,24 @@ Constructor of Graph
 * $debug **boolean** - &lt;p&gt;: false by default, set debug to true in order to get usefull output&lt;/p&gt;
 * $proxy_host **string** - &lt;p&gt;: null by default, IP of your proxy&lt;/p&gt;
 * $proxy_port **string** - &lt;p&gt;: null by default, port of your proxy&lt;/p&gt;
+
+
+
+### \Endpoint::setMethodHTTP()
+
+```
+mixed Endpoint::\Endpoint::setMethodHTTP()(string $method)
+```
+
+Set the method HTTP to read
+
+
+
+* Visibility: **public**
+
+#### Arguments
+
+* $method **string** - &lt;p&gt;: HTTP method (GET or POST) for reading data (by default is POST)&lt;/p&gt;
 
 
 
@@ -460,6 +517,70 @@ string Endpoint::\Endpoint::getNameParameterQueryRead()()
 ```
 
 Get the parameter in the query to read
+
+
+
+* Visibility: **public**
+
+
+
+### \Endpoint::setLogin()
+
+```
+mixed Endpoint::\Endpoint::setLogin()(string $login)
+```
+
+Set the server login
+
+
+
+* Visibility: **public**
+
+#### Arguments
+
+* $login **string** - &lt;p&gt;: server login&lt;/p&gt;
+
+
+
+### \Endpoint::getLogin()
+
+```
+string Endpoint::\Endpoint::getLogin()()
+```
+
+Get the server login
+
+
+
+* Visibility: **public**
+
+
+
+### \Endpoint::setPassword()
+
+```
+mixed Endpoint::\Endpoint::setPassword()(string $password)
+```
+
+Set the server password
+
+
+
+* Visibility: **public**
+
+#### Arguments
+
+* $password **string** - &lt;p&gt;: server password&lt;/p&gt;
+
+
+
+### \Endpoint::getPassword()
+
+```
+string Endpoint::\Endpoint::getPassword()()
+```
+
+Get the server login
 
 
 

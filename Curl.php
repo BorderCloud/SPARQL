@@ -118,7 +118,7 @@ class Curl
 	 * @param string url
 	 * @param array assoc post data array ie. $foo['post_var_name'] = $value
 	 * @param string ip address to bind (default null)
-	 * @param int timeout in sec for complete curl operation (default 10)
+	 * @param int timeout in sec for complete curl operation (default 600)
 	 * @return string data
 	 * @access public
     */
@@ -200,18 +200,45 @@ class Curl
 	 * fetch data from target URL
 	 * return data returned from url or false if error occured
 	 * @param string url
+	 * @param array assoc get data array ie. $foo['post_var_name'] = $value
 	 * @param string ip address to bind (default null)
-	 * @param int timeout in sec for complete curl operation (default 5)
+	 * @param int timeout in sec for complete curl operation (default 600)
 	 * @return string data
 	 * @access public
     */
-	function fetch_url($url, $ip=null, $timeout=5)
+	function fetch_url($url,$getdata=null, $ip=null, $timeout=600)
 	{
 		if($this->debug)
 			curl_setopt($this->ch, CURLOPT_VERBOSE, true);
 			
+			
+	        //generate get string
+		$get_array = array();
+		if(is_array($getdata))
+		{		  
+		    foreach($getdata as $key=>$value)
+		    {
+			    $get_array[] = urlencode($key) . "=" . urlencode($value);
+		    }
+		    $get_string = implode("&",$get_array);
+		
+		    if($this->debug)
+		    {
+			    curl_setopt($this->ch, CURLOPT_VERBOSE, true);
+			    echo "GET String: $get_string\n";
+		    }
+		}
+		else
+		{
+		    $get_string = null;
+		}
+		
 		// set url to post to
-		curl_setopt($this->ch, CURLOPT_URL,$url);
+		if(empty($get_string)){
+		  curl_setopt($this->ch, CURLOPT_URL,$url);
+		}else{
+		  curl_setopt($this->ch, CURLOPT_URL,$url."?".$get_string);		
+		}
 
 		//set method to get
 		curl_setopt($this->ch, CURLOPT_HTTPGET,true);

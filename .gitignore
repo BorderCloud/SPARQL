@@ -1,2 +1,5 @@
 composer.lock
-
+/output
+/nbproject
+/vendor
+/nbproject/private/

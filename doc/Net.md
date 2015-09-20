@@ -22,7 +22,7 @@ Methods
 ### \Net::ping()
 
 ```
-int Net::\Net::ping()($address)
+integer Net::\Net::ping()($address)
 ```
 
 Ping a address

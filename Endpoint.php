@@ -214,18 +214,25 @@ class Endpoint extends Base {
 	private $_parserSparqlResult;
 	
 	/**
-	 * Name of parameter HTTP GET to send a query SPARQL to read data.
+	 * Name of parameter HTTP to send a query SPARQL to read data.
 	 * @access private
 	 * @var string
 	 */
 	private $_nameParameterQueryRead;
 	
 	/**
-	 * Name of parameter HTTP POST to send a query SPARQL to write data.
+	 * Name of parameter HTTP to send a query SPARQL to write data.
 	 * @access private
 	 * @var string
 	 */
 	private $_nameParameterQueryWrite;
+	
+	/**
+	 * Method HTTP to send a query SPARQL to read data.
+	 * @access private
+	 * @var string
+	 */
+	private $_MethodHTTP;
 	
 
 	private $_login;
@@ -292,8 +299,25 @@ class Endpoint extends Base {
 		$this->_nameParameterQueryWrite = "update";		
 
 		//init parser
- 		$this->_parserSparqlResult = new ParserSparqlResult(); 		
+ 		$this->_parserSparqlResult = new ParserSparqlResult();
  		
+ 		//FIX for Wikidata
+ 		if( $endpoint == "https://query.wikidata.org/bigdata/namespace/wdq/sparql"){
+ 		   $this->_MethodHTTP= "GET";
+ 		}else{
+ 		   $this->_MethodHTTP= "POST"; // by default
+ 		}
+ 		
+	}
+	
+	//FIX for WIKIDATA
+	/**
+	 * Set the method HTTP to read
+	 * @param string $method : HTTP method (GET or POST) for reading data (by default is POST)
+	 * @access public
+	 */
+	public function setMethodHTTP($method) {
+		$this->_MethodHTTP = $method;
 	}
 	
 	/**
@@ -490,15 +514,26 @@ class Endpoint extends Base {
 		$sUri    = $this->_endpoint;	
 		$response ="";
 		
+		
+		
+		
 		if($typeOutput == null){
 			$data = array($this->_nameParameterQueryRead =>   $query);
-			$response = $client->send_post_data($sUri,$data);
+			if($this->_MethodHTTP == "POST"){
+			    $response = $client->send_post_data($sUri,$data);
+			}else{
+			    $response = $client->fetch_url($sUri,$data);//fix for wikidata
+			}
 		}else{
 			$data = array($this->_nameParameterQueryRead =>   $query,
 			//"output" => ConversionMimetype::getShortnameOfMimetype($typeOutput), //possible fix for 4store/fuseki..
 			"Accept" => $typeOutput); //fix for sesame
 			//print_r($data);
-			$response = $client->send_post_data($sUri,$data,array('Accept: '.$typeOutput));
+			if($this->_MethodHTTP == "POST"){
+			   $response = $client->send_post_data($sUri,$data,array('Accept: '.$typeOutput));
+			}else{
+			   $response = $client->fetch_url($sUri,$data);//fix for wikidata
+			}
 		}		
 
 		$code = $client->get_http_response_code();

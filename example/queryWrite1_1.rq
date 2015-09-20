@@ -1,0 +1,9 @@
+PREFIX a: <http://example.com/test/a/>
+PREFIX b: <http://example.com/test/b/>
+    INSERT DATA {
+	  GRAPH <http://example.com> {
+	  a:A b:Name "Test1" .
+	  a:A b:Name "Test2" .
+	  a:A b:Name "Test3" .
+	}
+} 

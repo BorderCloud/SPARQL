@@ -95,6 +95,37 @@ EXAMPLE : Allegrograph
 ```
 
 ### Examples
+Send a simple query to Wikidata :
+```php
+<?php
+
+require_once('../Endpoint.php');
+
+$endpoint ="https://query.wikidata.org/bigdata/namespace/wdq/sparql";
+$sp_readonly = new Endpoint($endpoint);
+$q = "select *  where {?x ?y ?z.} LIMIT 5";
+$rows = $sp_readonly->query($q, 'rows');
+$err = $sp_readonly->getErrors();
+if ($err) {
+      print_r($err);
+      throw new Exception(print_r($err,true));
+}
+
+foreach($rows["result"]["variables"] as $variable){
+        printf("%-20.20s",$variable);
+        echo '|';
+ }
+ echo "\n";
+
+foreach ($rows["result"]["rows"] as $row){
+        foreach($rows["result"]["variables"] as $variable){
+                printf("%-20.20s",$row[$variable]);
+        echo '|';
+        }
+        echo "\n";
+ }
+?>
+```
 
 Send a simple query to DBpedia :
 ```php
@@ -179,7 +210,7 @@ karima.rafes@bordercloud.com
 
 ### Release-Notes 
 
-* V1.O.0.0 version SPARQL.Pro lib PHP by Karima Rafes <karima.rafes@bordercloud.com>
+* V1.1.0.0 version SPARQL.Pro lib PHP by Karima Rafes <karima.rafes@bordercloud.com>
 
 ### license 
 SPARQL.Pro lib PHP (c)2014 by Karima Rafes - BorderCloud
@@ -191,7 +222,7 @@ You should have received a copy of the license along with this
 work. If not, see <http://creativecommons.org/licenses/by-sa/4.0/>. 
 
 ### Compile DOC 
-php ../vendor/phpdocumentor/phpdocumentor/bin/phpdoc.php -d . --template="xml"
-../vendor/evert/phpdoc-md/bin/phpdocmd ./output/structure.xml doc
+php vendor/phpdocumentor/phpdocumentor/bin/phpdoc.php --template="xml" -f Base.php -f ConversionMimetype.php  -f Endpoint.php   -f ParserCSV.php -f ToolsConvert.php -f Curl.php  -f Net.php  -f ParserSparqlResult.php -f Namespace.php -f ParserTurtle.php -f ToolsBlankNode.php
+vendor/evert/phpdoc-md/bin/phpdocmd ./output/structure.xml doc
 
 

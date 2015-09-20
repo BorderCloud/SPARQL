@@ -195,7 +195,7 @@ return data returned from url or false if error occured
 ### \Curl::fetch_url()
 
 ```
-string Curl::\Curl::fetch_url()($url, $ip, $timeout)
+string Curl::\Curl::fetch_url()($url, $getdata, $ip, $timeout)
 ```
 
 fetch data from target URL
@@ -208,6 +208,7 @@ return data returned from url or false if error occured
 #### Arguments
 
 * $url **mixed**
+* $getdata **mixed**
 * $ip **mixed**
 * $timeout **mixed**
 
@@ -295,7 +296,7 @@ usefull when original url was redirected to other location
 ### \Curl::get_http_response_code()
 
 ```
-int Curl::\Curl::get_http_response_code()()
+integer Curl::\Curl::get_http_response_code()()
 ```
 
 Get http response code

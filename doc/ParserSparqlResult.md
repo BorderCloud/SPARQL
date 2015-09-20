@@ -237,6 +237,28 @@ mixed ParserSparqlResult::\ParserSparqlResult::mySortResult()($row1, $row2)
 
 
 
+### \ParserSparqlResult::compare()
+
+```
+mixed ParserSparqlResult::\ParserSparqlResult::compare()($rs1, $rs2, $ordered, $distinct)
+```
+
+
+
+
+
+* Visibility: **public**
+* This method is **static**.
+
+#### Arguments
+
+* $rs1 **mixed**
+* $rs2 **mixed**
+* $ordered **mixed**
+* $distinct **mixed**
+
+
+
 ### \Base::__construct()
 
 ```
