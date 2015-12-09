@@ -377,7 +377,7 @@ if($typeOutput === "table"){
     if ($err) {
 	    echo "ERROR \n";
 	    print_r($err,true);
-	    exit();
+	    exit(1);
     }
     
     foreach($rows["result"]["variables"] as $variable){
@@ -400,7 +400,7 @@ if($typeOutput === "table"){
 	    $response = $ENDPOINT->queryUpdate( file_get_contents($filename),$type);
     else{
 	    echo "ERROR : forget parameter after -r or -w (see --help)\n";
-	    exit();
+	    exit(1);
     }
 	    
     $err = $ENDPOINT->getErrors();
@@ -408,7 +408,7 @@ if($typeOutput === "table"){
     if ($err) {
 	    echo "ERROR \n";
 	    print_r($err,true);
-	    exit();
+	    exit(1);
     }
     echo $response;
  }
