@@ -12,20 +12,20 @@ class ParserSparqlResult extends Base {
    private $_value;
    
    function __construct() {
-   		parent::__construct();
-   		$this->_result = array();
+        parent::__construct();
+        $this->_result = array();
    }
    
    function getParser(){
-	   	$objectParser = xml_parser_create();
-	   	xml_set_object ($objectParser, $this);
-	   	
-	   	//Don't alter the case of the data
-	   	xml_parser_set_option($objectParser, XML_OPTION_CASE_FOLDING, false);
-	   	
-	   	xml_set_element_handler($objectParser,"startElement","endElement");
-	   	xml_set_character_data_handler($objectParser, "contentHandler");
-	   	return $objectParser;
+        $objectParser = xml_parser_create();
+        xml_set_object ($objectParser, $this);
+
+        //Don't alter the case of the data
+        xml_parser_set_option($objectParser, XML_OPTION_CASE_FOLDING, false);
+
+        xml_set_element_handler($objectParser,"startElement","endElement");
+        xml_set_character_data_handler($objectParser, "contentHandler");
+        return $objectParser;
    }
    
    function getResult(){

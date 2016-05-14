@@ -232,7 +232,8 @@ class Endpoint extends Base {
 	 * @access private
 	 * @var string
 	 */
-	private $_MethodHTTP;
+	private $_MethodHTTPRead;
+	private $_MethodHTTPWrite;
 	
 
 	private $_login;
@@ -302,10 +303,10 @@ class Endpoint extends Base {
  		$this->_parserSparqlResult = new ParserSparqlResult();
  		
  		//FIX for Wikidata
- 		if( $endpoint == "https://query.wikidata.org/bigdata/namespace/wdq/sparql"){
- 		   $this->_MethodHTTP= "GET";
+ 		if( $endpoint == "https://query.wikidata.org/sparql"){
+ 		   $this->_MethodHTTPRead= "GET";
  		}else{
- 		   $this->_MethodHTTP= "POST"; // by default
+ 		   $this->_MethodHTTPRead= "POST"; // by default
  		}
  		
 	}
@@ -316,8 +317,17 @@ class Endpoint extends Base {
 	 * @param string $method : HTTP method (GET or POST) for reading data (by default is POST)
 	 * @access public
 	 */
-	public function setMethodHTTP($method) {
-		$this->_MethodHTTP = $method;
+	public function setMethodHTTPead($method) {
+		$this->_MethodHTTPRead = $method;
+	}
+        
+	/**
+	 * Set the method HTTP to write
+	 * @param string $method : HTTP method (GET or POST) for writing data (by default is POST)
+	 * @access public
+	 */
+	public function setMethodHTTPWrite($method) {
+		$this->_MethodHTTPWrite = $method;
 	}
 	
 	/**
@@ -451,38 +461,46 @@ class Endpoint extends Base {
 	 * @access public
 	 */
 	public function query($q, $result_format = 'rows') {	
-		$t1 = Endpoint::mtime();
-		$result = null;
-		switch($result_format)
-		{
-			case "json" :			
-				$response = $this->queryRead($q,"application/sparql-results+json");
-				$result = json_decode($response);
-				break;
-			case "row" :
-			case "raw" :
-			default: //rows		
-				$response = $this->queryRead($q);
-				xml_parse($this->_parserSparqlResult->getParser(),$response, true);		
-				$result = $this->_parserSparqlResult->getResult();
-				if(! array_key_exists("result",$result)){
-					$message = "Error parsing SPARQL result:\n Message XML result (in theory) :>>>>>>>\n".$response."\n<<<<<<<<\n";
-					$error = $this->errorLog($q,null, $this->_endpoint,200,$message);
-					$this->addError($error);
-					return false;
-				}
-		}
-		$result['query_time'] =   Endpoint::mtime() - $t1 ;
-		switch($result_format)
-		{
-			case "row" :
-				return $result["result"]["rows"][0];
-			case "raw" :
-				return $result["result"]["rows"][0][0];				
-			case "json" :
-			default: //rows				
-				return $result;
-		}
+            $t1 = Endpoint::mtime();
+            $result = null;
+            switch($result_format)
+            {
+                case "json" :			
+                    $response = $this->queryRead($q,"application/sparql-results+json");
+                    $result = json_decode($response);
+                    break;
+                case "row" :
+                case "raw" :
+                default: //rows	
+                    $response ="";
+                    if(preg_match("/(INSERT|DELETE)/i",$q)){
+                        $response = $this->queryUpdate($q);
+                    }else{
+                        $response = $this->queryRead($q);
+                    }
+                    $parser = $this->_parserSparqlResult->getParser();
+                    $success = xml_parse($parser,$response, true);		
+                    $result = $this->_parserSparqlResult->getResult();
+                    if(!$success ){ //if(! array_key_exists("result",$result)){
+                        $message = "Error parsing XML result:" 
+                                .xml_error_string(xml_get_error_code($parser))
+                                .' Response : '.$response."\n";
+                        $error = $this->errorLog($q,null, $this->_endpoint,200,$message);
+                        $this->addError($error);
+                        return false;
+                    }
+            }
+            $result['query_time'] =   Endpoint::mtime() - $t1 ;
+            switch($result_format)
+            {
+                case "row" :
+                        return $result["result"]["rows"][0];
+                case "raw" :
+                    return $result["result"]["rows"][0][$result["result"]["variables"][0]];
+                case "json" :
+                default: //rows				
+                        return $result;
+            }
 	}
 /*
 	public function queryConstruct($q) {	
@@ -510,43 +528,41 @@ class Endpoint extends Base {
 	* @access public
 	*/
 	public function queryRead($query,$typeOutput="application/sparql-results+xml" ) {
-		$client = $this->initCurl();
-		$sUri    = $this->_endpoint;	
-		$response ="";
-		
-		
-		
-		
-		if($typeOutput == null){
-			$data = array($this->_nameParameterQueryRead =>   $query);
-			if($this->_MethodHTTP == "POST"){
-			    $response = $client->send_post_data($sUri,$data);
-			}else{
-			    $response = $client->fetch_url($sUri,$data);//fix for wikidata
-			}
-		}else{
-			$data = array($this->_nameParameterQueryRead =>   $query,
-			//"output" => ConversionMimetype::getShortnameOfMimetype($typeOutput), //possible fix for 4store/fuseki..
-			"Accept" => $typeOutput); //fix for sesame
-			//print_r($data);
-			if($this->_MethodHTTP == "POST"){
-			   $response = $client->send_post_data($sUri,$data,array('Accept: '.$typeOutput));
-			}else{
-			   $response = $client->fetch_url($sUri,$data);//fix for wikidata
-			}
-		}		
+            $client = $this->initCurl();
+            $sUri    = $this->_endpoint;	
+            $response ="";
 
-		$code = $client->get_http_response_code();
-			
-		$this->debugLog($query,$sUri,$code,$response);
-	
-		if($code < 200 || $code >= 300)
-		{
-			$error = $this->errorLog($query,$data,$sUri,$code,$response. $client->get_error_msg() );
-			$this->addError($error);
-			return false;
-		}
-		return $response;
+            if($typeOutput == null){
+                $data = array($this->_nameParameterQueryRead =>   $query);
+                if($this->_MethodHTTPRead == "POST"){
+                    $response = $client->send_post_data($sUri,$data);
+                }else{
+                    $response = $client->fetch_url($sUri,$data);//fix for wikidata
+                }
+            }else{
+                $data = array($this->_nameParameterQueryRead =>   $query,
+                //"output" => ConversionMimetype::getShortnameOfMimetype($typeOutput), //possible fix for 4store/fuseki..
+                "Accept" => $typeOutput); //fix for sesame
+                //print_r($data);
+                if($this->_MethodHTTPRead == "POST"){
+                   $response = $client->send_post_data($sUri,$data,array('Accept: '.$typeOutput));
+                }else{
+                   $response = $client->fetch_url($sUri,$data);//fix for wikidata
+                }
+            }		
+
+            $code = $client->get_http_response_code();
+
+            $this->debugLog($query,$sUri,$code,$response);
+
+            if(($code < 200 || $code >= 300) )
+            {
+                $error = $this->errorLog($query,$data,$sUri,$code,$response.
+                        $client->get_error_msg() );
+                $this->addError($error);
+                return false;
+            }
+            return $response;
 	}
 
 	/**
@@ -561,31 +577,40 @@ class Endpoint extends Base {
 	 * @access public
 	 */
 	public function queryUpdate($query,$typeOutput="application/sparql-results+xml") { 
-			$client = $this->initCurl();
-			$sUri  =   $this->_endpoint_write;			
-			$response ="";
-		
-			if($typeOutput == null){
-				$data = array($this->_nameParameterQueryWrite =>   $query);
-				$response = $client->send_post_data($sUri,$data);
-			}else{
-				$data = array($this->_nameParameterQueryWrite =>   $query,
- 				//"output" => ConversionMimetype::getShortnameOfMimetype($typeOutput), //possible fix for 4store/fuseki...
-				"Accept" => $typeOutput); //fix for sesame
-				$response = $client->send_post_data($sUri,$data,array('Accept: '.$typeOutput));
-			}		
-			
-			$code = $client->get_http_response_code();
+            $client = $this->initCurl();
+            $sUri  =   $this->_endpoint_write;	
+            $response ="";
+            
+            if($typeOutput == null){
+                $data = array($this->_nameParameterQueryWrite =>   $query);
+                if($this->_MethodHTTPWrite == "POST"){
+                    $response = $client->send_post_data($sUri,$data);
+                }else{
+                    $response = $client->fetch_url($sUri,$data);//fix for wikidata
+                }
+            }else{
+                $data = array($this->_nameParameterQueryWrite =>   $query,
+                //"output" => ConversionMimetype::getShortnameOfMimetype($typeOutput), //possible fix for 4store/fuseki..
+                "Accept" => $typeOutput); //fix for sesame
+                //print_r($data);
+                if($this->_MethodHTTPWrite == "POST"){
+                   $response = $client->send_post_data($sUri,$data,array('Accept: '.$typeOutput));
+                }else{
+                   $response = $client->fetch_url($sUri,$data);//fix for wikidata
+                }
+            }	
 
-			$this->debugLog($query,$sUri,$code,$response);
-					
-			if($code < 200 || $code >= 300 ){
-				$error = $this->errorLog($query,$data,$sUri,$code,$response);
-				$this->addError($error);
-				return false;
-			}
-			//echo "OK".$response;
-			return $response;
+            $code = $client->get_http_response_code();
+
+            $this->debugLog($query,$sUri,$code,$response);
+
+            if($code < 200 || $code >= 300 ){
+                    $error = $this->errorLog($query,$data,$sUri,$code,$response);
+                    $this->addError($error);
+                    return false;
+            }
+            //echo "OK".$response;
+            return $response;
         }
 		
 	/************************************************************************/
