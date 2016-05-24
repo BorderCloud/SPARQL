@@ -317,7 +317,7 @@ class Endpoint extends Base {
 	 * @param string $method : HTTP method (GET or POST) for reading data (by default is POST)
 	 * @access public
 	 */
-	public function setMethodHTTPead($method) {
+	public function setMethodHTTPRead($method) {
 		$this->_MethodHTTPRead = $method;
 	}
         
@@ -577,6 +577,13 @@ class Endpoint extends Base {
 	 * @access public
 	 */
 	public function queryUpdate($query,$typeOutput="application/sparql-results+xml") { 
+            if($this->_readOnly){
+                 $message = "Sorry, you have not the right to update the database.\n";
+                 $error = $this->errorLog('',null, $this->_endpoint,0,$message);
+                 $this->addError($error);
+                 return false;
+            }
+            
             $client = $this->initCurl();
             $sUri  =   $this->_endpoint_write;	
             $response ="";
