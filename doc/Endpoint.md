@@ -287,13 +287,26 @@ Name of parameter HTTP to send a query SPARQL to write data.
 * Visibility: **private**
 
 
-### $_MethodHTTP
+### $_MethodHTTPRead
 
 ```
-private string $_MethodHTTP
+private string $_MethodHTTPRead
 ```
 
 Method HTTP to send a query SPARQL to read data.
+
+
+
+* Visibility: **private**
+
+
+### $_MethodHTTPWrite
+
+```
+private mixed $_MethodHTTPWrite
+```
+
+
 
 
 
@@ -378,10 +391,10 @@ Constructor of Graph
 
 
 
-### \Endpoint::setMethodHTTP()
+### \Endpoint::setMethodHTTPRead()
 
 ```
-mixed Endpoint::\Endpoint::setMethodHTTP()(string $method)
+mixed Endpoint::\Endpoint::setMethodHTTPRead()(string $method)
 ```
 
 Set the method HTTP to read
@@ -393,6 +406,24 @@ Set the method HTTP to read
 #### Arguments
 
 * $method **string** - &lt;p&gt;: HTTP method (GET or POST) for reading data (by default is POST)&lt;/p&gt;
+
+
+
+### \Endpoint::setMethodHTTPWrite()
+
+```
+mixed Endpoint::\Endpoint::setMethodHTTPWrite()(string $method)
+```
+
+Set the method HTTP to write
+
+
+
+* Visibility: **public**
+
+#### Arguments
+
+* $method **string** - &lt;p&gt;: HTTP method (GET or POST) for writing data (by default is POST)&lt;/p&gt;
 
 
 

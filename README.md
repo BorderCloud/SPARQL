@@ -101,7 +101,7 @@ Send a simple query to Wikidata :
 
 require_once('../Endpoint.php');
 
-$endpoint ="https://query.wikidata.org/bigdata/namespace/wdq/sparql";
+$endpoint ="https://query.wikidata.org/sparql";
 $sp_readonly = new Endpoint($endpoint);
 $q = "select *  where {?x ?y ?z.} LIMIT 5";
 $rows = $sp_readonly->query($q, 'rows');
@@ -210,6 +210,8 @@ karima.rafes@bordercloud.com
 
 ### Release-Notes 
 
+* V1.2.1.0 Add fix for Wikidata and other
+
 * V1.1.0.0 version SPARQL.Pro lib PHP by Karima Rafes <karima.rafes@bordercloud.com>
 
 ### license 
@@ -222,7 +224,5 @@ You should have received a copy of the license along with this
 work. If not, see <http://creativecommons.org/licenses/by-sa/4.0/>. 
 
 ### Compile DOC 
-php vendor/phpdocumentor/phpdocumentor/bin/phpdoc.php --template="xml" -f Base.php -f ConversionMimetype.php  -f Endpoint.php   -f ParserCSV.php -f ToolsConvert.php -f Curl.php  -f Net.php  -f ParserSparqlResult.php -f Namespace.php -f ParserTurtle.php -f ToolsBlankNode.php
+php vendor/phpdocumentor/phpdocumentor/bin/phpdoc --template="xml" -f Base.php -f ConversionMimetype.php  -f Endpoint.php   -f ParserCSV.php -f ToolsConvert.php -f Curl.php  -f Net.php  -f ParserSparqlResult.php -f Namespace.php -f ParserTurtle.php -f ToolsBlankNode.php
 vendor/evert/phpdoc-md/bin/phpdocmd ./output/structure.xml doc
-
-
