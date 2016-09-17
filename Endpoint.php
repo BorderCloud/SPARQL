@@ -181,7 +181,7 @@ class Endpoint extends Base {
 	/**
 	 * in the constructor set debug to true in order to get usefull output
 	 * @access private
-	 * @var string
+	 * @var bool
 	 */
 	private $_debug;
 	
@@ -239,10 +239,6 @@ class Endpoint extends Base {
 	private $_login;
 	private $_password;
 	
-	/** For Arc2 **/
-// 	private $_arc2_RemoteStore;
-// 	private $_arc2_Reader;
-// 	private $_config;
 
 	/**
 	 * Constructor of Graph
@@ -473,7 +469,7 @@ class Endpoint extends Base {
                 case "raw" :
                 default: //rows	
                     $response ="";
-                    if(preg_match("/(INSERT|DELETE)/i",$q)){
+                    if(preg_match("/(INSERT|DELETE|CLEAR)/i",$q)){
                         $response = $this->queryUpdate($q);
                     }else{
                         $response = $this->queryRead($q);
