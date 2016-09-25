@@ -469,7 +469,7 @@ class Endpoint extends Base {
                 case "raw" :
                 default: //rows	
                     $response ="";
-                    if(preg_match("/(INSERT|DELETE|CLEAR)/i",$q)){
+                    if(preg_match("/(INSERT|DELETE|CLEAR|LOAD)/i",$q)){
                         $response = $this->queryUpdate($q);
                     }else{
                         $response = $this->queryRead($q);
