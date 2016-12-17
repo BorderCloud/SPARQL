@@ -10,7 +10,7 @@ require_once("Base.php");
 require_once("ToolsConvert.php");
 require_once("ToolsBlankNode.php");
 require_once("ParserSparqlResult.php");
-//require_once("ConversionMimetype.php");
+require_once("ConversionMimetype.php");
 
 /**
  * Sparql HTTP Client for SPARQL1.1's Endpoint
@@ -537,7 +537,7 @@ class Endpoint extends Base {
                 }
             }else{
                 $data = array($this->_nameParameterQueryRead =>   $query,
-                //"output" => ConversionMimetype::getShortnameOfMimetype($typeOutput), //possible fix for 4store/fuseki..
+                "output" => ConversionMimetype::getShortnameOfMimetype($typeOutput), //possible fix for 4store/fuseki..
                 "Accept" => $typeOutput); //fix for sesame
                 //print_r($data);
                 if($this->_MethodHTTPRead == "POST"){
