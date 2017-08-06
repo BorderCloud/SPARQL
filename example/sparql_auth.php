@@ -4,7 +4,7 @@ use BorderCloud\SPARQL\Endpoint;
 // git clone https://github.com/BorderCloud/SPARQL
 // ./query -r -e https://example.com/sparql-auth -f ./example/queryRead1.rq -l login -p password -v
 
-require_once ('../Endpoint.php');
+require_once ('../vendor/autoload.php');
 
 $endpoint = "https://example.com/sparql-auth";
 $sp_ReadAndWrite = new Endpoint($endpoint, false);

@@ -1,7 +1,7 @@
 <?php
 use BorderCloud\SPARQL\Endpoint;
 
-require_once ('../Endpoint.php');
+require_once ('../vendor/autoload.php');
 
 $endpoint = "http://data.bnf.fr/sparql";
 $sp_readonly = new Endpoint($endpoint);

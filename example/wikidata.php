@@ -1,7 +1,7 @@
 <?php
 use BorderCloud\SPARQL\Endpoint;
 
-require_once ('../Endpoint.php');
+require_once ('../vendor/autoload.php');
 
 $endpoint = "https://query.wikidata.org/bigdata/namespace/wdq/sparql";
 $sp_readonly = new Endpoint($endpoint);
