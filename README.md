@@ -1,6 +1,6 @@
 ## Lib Sparql 1.1 HTTP Client 
 
-###Installation
+### Installation
 
 This project assumes you have composer installed. Simply add new dependency via Composer:
 ```sh
