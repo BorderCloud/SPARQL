@@ -1,5 +1,69 @@
-composer.lock
+# External libraries
+/vendor/
+/composer.phar
+
+# Configuration files with possibly sensitive information
+
+# Files and folders related to build/test tools
+
+# Ignore other .gitignore files to allow for personal customizations
+.gitignore
+!/.gitignore
+
+# Temporary files
+.temp/
+tmp/
 /output
-/nbproject
-/vendor
-/nbproject/private/
+
+# Files related to applying patches
+*.rej
+*.orig
+*.patch
+*.diff
+.svn
+
+
+
+#################
+## NetBeans specific
+#################
+
+/nbproject/
+/nbbuild/
+/dist/
+/nbdist/
+/nbactions.xml
+/nb-configuration.xml
+/.nb-gradle/
+
+
+
+#################
+## Eclipse specific
+#################
+
+*.pydevproject
+.project
+.metadata
+/bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
