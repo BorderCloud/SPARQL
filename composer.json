@@ -17,7 +17,7 @@
 		}
 	],
 	"require" : {
-		"php" : ">=5.2"
+		"php" : ">=5.3"
 	},
 	"repositories" : [{
 			"type" : "vcs",
