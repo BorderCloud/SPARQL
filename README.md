@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/BorderCloud/SPARQL.svg?branch=master)](https://travis-ci
-.org/BorderCloud/SPARQL)
+[![Build Status](https://travis-ci.org/BorderCloud/SPARQL.svg?branch=master)](https://travis-ci.org/BorderCloud/SPARQL)
 
 
 ## Lib Sparql 1.1 HTTP Client
