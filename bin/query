@@ -1,0 +1,421 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+use BorderCloud\SPARQL\Curl;
+use BorderCloud\SPARQL\SparqlClient;
+
+require_once 'SparqlClient.php';
+// require_once 'Test.php';
+
+// List of servers available that you can test with this script
+
+$usage = "
+USAGE : query [-r|-w][-e URL|--endpointQueryAndUpdate=URL]
+		[--file=FILE|-f FILE]
+        [-v|-verbose]
+
+    -r                                  READ ONLY
+    -w                                  WRITE ONLY
+    -e, --endpointQueryAndUpdate=URL    Put url of endpoint to do query or
+                                        update :
+                                            URL/sparql/?query=...
+                                            URL/update/?update=... (POST)
+    -q, --endpointQueryOnly=URL         Put url of endpoint to do query :
+                                            URL?query=...
+    -u, --endpointUpdateOnly=URL        Put url of endpoint to do query :
+                                            URL?update=... (POST)
+    --nameParameterQuery=PARAMETER      Change the name of parameter in
+                                        the request http to read.
+                                        (by default : query)
+    --nameParameterUpdate=PARAMETER     Change the name of parameter in
+                                        the request http to write.
+                                        (by default : update)
+    -f,--file=File                      File of the query.
+    -t, --typeOutput=TYPE               Type of response: table,txt,csv,tsv,ttl,srx,srj
+                                        (by default : table)
+
+    -l, --login=LOGIN                  Server login
+    -p, --password=PASSWORD            Server password
+
+    -v, --verbose                       Mode verbose
+    -d, --debug                         Mode debug
+
+EXAMPLE : Virtuoso
+./query -w -e http://localhost/tests/ -f ./example/queryWrite1.rq
+
+./query -r -e http://localhost/tests/ -f ./example/queryRead1.rq
+
+EXAMPLE : 4Store
+./query -w -e http://localhost/ -f ./example/queryWrite1.rq
+
+./query -r -e http://localhost/ -f ./example/queryRead1.rq
+
+EXAMPLE : Sesame
+./query -w -q http://localhost/openrdf-sesame/repositories/tests \
+ -u http://localhost/openrdf-sesame/repositories/tests/statements \
+-f ./example/queryWrite1.rq
+
+./query -r -q http://localhost/openrdf-sesame/repositories/tests \
+ -u http://localhost/openrdf-sesame/repositories/tests/statements \
+-f ./example/queryRead1.rq
+
+EXAMPLE : Fuseki
+./query -w -q http://localhost/tests/query \
+-u http://localhost/tests/update \
+-f ./example/queryWrite1.rq
+
+./query -r -q http://localhost/tests/query \
+-u http://localhost/tests/update \
+-f ./example/queryRead1.rq
+
+EXAMPLE : Allegrograph
+./query -w -q http://localhost/repositories/tests \
+-u http://localhost/repositories/tests \
+--nameParameterUpdate=query \
+-f ./example/queryWrite1.rq
+
+./query -r -q http://localhost/repositories/tests \
+-u http://localhost/repositories/tests \
+--nameParameterUpdate=query \
+-f ./example/queryRead1.rq
+
+";
+
+// Variables - inputs
+$modeVerbose = false;
+$modeDebug = false;
+$modeRead = false;
+$modeWrite = false;
+
+$triplestore = "standard";
+$endpointQueryAndUpdate = "";
+$endpointQueryOnly = "";
+$endpointUpdateOnly = "";
+$nameParameterQuery = "query";
+$nameParameterUpdate = "update";
+$endpointLogin = "";
+$endpointPassword = "";
+
+$modeRead = false;
+$modeWrite = false;
+
+$filename = "";
+$typeOutput = "table";
+$type = "";
+
+// Client web
+$CURL = new Curl($modeDebug);
+
+if (count($argv) < 2) {
+    echo $usage;
+    exit();
+}
+
+for ($i = 1; $i < count($argv); $i ++) {
+    $param = explode("=", $argv[$i]);
+
+    switch ($param[0]) {
+        case "-h":
+        case "--help":
+            echo $usage;
+            exit();
+        case "-v":
+        case "--verbose":
+            $modeVerbose = true;
+            break;
+        case "-r":
+        case "--read":
+            $modeRead = true;
+            break;
+        case "-w":
+        case "--write":
+            $modeWrite = true;
+            break;
+        case "-d":
+        case "--debug":
+            $modeDebug = true;
+            $modeVerbose = true;
+            break;
+        // ////////////////////////////////////////////////////////////////////////////////
+        case "-e":
+            if (! array_key_exists($i + 1, $argv)) {
+                echo "ERROR : forget parameter after -e (see --help)\n";
+                exit();
+            }
+            $endpointQueryAndUpdate = $argv[$i + 1];
+            if (! filter_var($endpointQueryAndUpdate, FILTER_VALIDATE_URL)) {
+                echo "ERROR : The URL of endpoint is not valid\n";
+                exit();
+            }
+            $i ++;
+            break;
+        case "--endpointQueryAndUpdate":
+            if (! array_key_exists(1, $param)) {
+                echo "ERROR : forget parameter after --endpointQueryAndUpdate (see --help)\n";
+                exit();
+            }
+            $endpointQueryAndUpdate = $param[1];
+            if (! filter_var($endpointQueryAndUpdate, FILTER_VALIDATE_URL)) {
+                echo "ERROR : The URL of endpoint is not valid\n";
+                exit();
+            }
+            break;
+        case "-q":
+            if (! array_key_exists($i + 1, $argv)) {
+                echo "ERROR : forget parameter after -q (see --help)\n";
+                exit();
+            }
+            $endpointQueryOnly = $argv[$i + 1];
+            if (! filter_var($endpointQueryOnly, FILTER_VALIDATE_URL)) {
+                echo "ERROR : The URL of endpoint is not valid\n";
+                exit();
+            }
+            $i ++;
+            break;
+        case "--endpointQueryOnly":
+            if (! array_key_exists(1, $param)) {
+                echo "ERROR : forget parameter after --endpointQueryOnly (see --help)\n";
+                exit();
+            }
+            $endpointQueryOnly = $param[1];
+            if (! filter_var($endpointQueryOnly, FILTER_VALIDATE_URL)) {
+                echo "ERROR : The URL of endpoint is not valid\n";
+                exit();
+            }
+            break;
+        case "-u":
+            if (! array_key_exists($i + 1, $argv)) {
+                echo "ERROR : forget parameter after -u (see --help)\n";
+                exit();
+            }
+            $endpointUpdateOnly = $argv[$i + 1];
+            if (! filter_var($endpointUpdateOnly, FILTER_VALIDATE_URL)) {
+                echo "ERROR : The URL of endpoint is not valid\n";
+                exit();
+            }
+            $i ++;
+            break;
+        case "--endpointUpdateOnly":
+            if (! array_key_exists(1, $param)) {
+                echo "ERROR : forget parameter after --endpointUpdateOnly (see --help)\n";
+                exit();
+            }
+            $endpointUpdateOnly = $param[1];
+            if (! filter_var($endpointUpdateOnly, FILTER_VALIDATE_URL)) {
+                echo "ERROR : The URL of endpoint is not valid\n";
+                exit();
+            }
+            break;
+        case "--nameParameterQuery":
+            if (! array_key_exists(1, $param)) {
+                echo "ERROR : forget parameter after --nameParameterQuery (see --help)\n";
+                exit();
+            }
+            $nameParameterQuery = $param[1];
+            break;
+        case "--nameParameterUpdate":
+            if (! array_key_exists(1, $param)) {
+                echo "ERROR : forget parameter after --nameParameterUpdate (see --help)\n";
+                exit();
+            }
+            $nameParameterUpdate = $param[1];
+            break;
+        case "-f":
+            if (! array_key_exists($i + 1, $argv)) {
+                echo "ERROR : forget parameter after -f (see --help)\n";
+                exit();
+            }
+            $filename = $argv[$i + 1];
+            if (! file_exists($filename)) {
+                echo "The file $filename does not exist";
+                exit();
+            }
+            $i ++;
+            break;
+        case "--file":
+            if (! array_key_exists(1, $param)) {
+                echo "ERROR : forget parameter after --endpointQueryOnly (see --help)\n";
+                exit();
+            }
+            $filename = $param[1];
+            if (! file_exists($filename)) {
+                echo "The file $filename does not exist";
+                exit();
+            }
+            break;
+        case "-t":
+            if (! array_key_exists($i + 1, $argv)) {
+                echo "ERROR : forget parameter after -t (see --help)\n";
+                exit();
+            }
+            $typeOutput = $argv[$i + 1];
+            $i ++;
+            break;
+        case "--typeOutput":
+            if (! array_key_exists(1, $param)) {
+                echo "ERROR : forget parameter after --typeOutput (see --help)\n";
+                exit();
+            }
+            $typeOutput = $param[1];
+            break;
+
+        case "-l":
+            if (! array_key_exists($i + 1, $argv)) {
+                echo "ERROR : forget parameter after -l (see --help)\n";
+                exit();
+            }
+            $endpointLogin = $argv[$i + 1];
+            $i ++;
+            break;
+        case "--login":
+            if (! array_key_exists(1, $param)) {
+                echo "ERROR : forget parameter after --login (see --help)\n";
+                exit();
+            }
+            $endpointLogin = $param[1];
+            break;
+        case "-p":
+            if (! array_key_exists($i + 1, $argv)) {
+                echo "ERROR : forget parameter after -p (see --help)\n";
+                exit();
+            }
+            $endpointPassword = $argv[$i + 1];
+            $i ++;
+            break;
+        case "--password":
+            if (! array_key_exists(1, $param)) {
+                echo "ERROR : forget parameter after --password (see --help)\n";
+                exit();
+            }
+            $endpointPassword = $param[1];
+            break;
+        default:
+            // echo $usage; exit();
+            echo "ERROR usage ! (" . $param[0] . "?)";
+            echo $usage;
+            exit();
+    }
+}
+
+if ($modeDebug) {
+    ini_set('display_errors', 'On');
+} else {
+    ini_set('error_log', '/dev/null');
+    ini_set('display_errors', 'Off');
+}
+
+// ///////////// INIT ENDPOINT
+$ENDPOINT = null;
+if ($endpointQueryOnly == "" && $endpointUpdateOnly == "" && $endpointQueryAndUpdate == "") {
+    echo "ERROR : The endpoint didn't find\n";
+    exit();
+} elseif ($endpointQueryAndUpdate != "") {
+    $ENDPOINT = new SparqlClient($modeDebug);
+    $ENDPOINT->setEndpointRead($endpointQueryAndUpdate);
+    $ENDPOINT->setEndpointWrite($endpointQueryAndUpdate);
+} elseif ($endpointQueryOnly == "" || $endpointUpdateOnly == "") {
+    echo "ERROR : The endpoint SPARQL query or update didn't find\n";
+    exit();
+} else {
+    $ENDPOINT = new SparqlClient($modeDebug);
+    $ENDPOINT->setEndpointRead($endpointQueryOnly);
+    $ENDPOINT->setEndpointWrite($endpointUpdateOnly);
+    $ENDPOINT->setNameParameterQueryRead($nameParameterQuery);
+    $ENDPOINT->setNameParameterQueryWrite($nameParameterUpdate);
+}
+
+if ($endpointLogin != "" && $endpointPassword != "") {
+    $ENDPOINT->setLogin($endpointLogin);
+    $ENDPOINT->setPassword($endpointPassword);
+}
+
+switch ($typeOutput) {
+    case "txt":
+        $type = "text/plain";
+        break;
+    case "csv":
+        $type = "text/csv; charset=utf-8";
+        break;
+    case "tsv":
+        $type = "text/tab-separated-values; charset=utf-8";
+        break;
+    case "ttl":
+        $type = "text/turtle";
+        break;
+    case "table":
+    case "srx":
+        $type = "application/sparql-results+xml";
+        break;
+    case "srj":
+        $type = "application/sparql-results+json";
+        break;
+    default:
+        $type = $typeOutput;
+        break;
+}
+
+if ($modeVerbose) {
+    echo "
+Configuration :
+- Endpoint query       : " . $ENDPOINT->getEndpointRead() . "
+- Endpoint update      : " . $ENDPOINT->getEndpointWrite() . "
+- Mode verbose         : " . ($modeVerbose ? "ON" : "OFF") . "
+- Mode debug           : " . ($modeDebug ? "ON" : "OFF") . "
+- Type output           : " . $type . "
+- Endpoint login       : " . $ENDPOINT->getLogin() . "
+- Endpoint password    : " . $ENDPOINT->getPassword() . "
+";
+}
+
+// ///////
+
+$ENDPOINT->ResetErrors();
+
+// queryRead
+/*
+ *
+ */
+
+if ($typeOutput === "table") {
+    $rows = $ENDPOINT->query(file_get_contents($filename), 'rows');
+    $err = $ENDPOINT->getErrors();
+
+    if ($err) {
+        echo "ERROR \n";
+        print_r($err, true);
+        exit(1);
+    }
+
+    foreach ($rows["result"]["variables"] as $variable) {
+        printf("%-20.20s", $variable);
+        echo '|';
+    }
+    echo "\n";
+
+    foreach ($rows["result"]["rows"] as $row) {
+        foreach ($rows["result"]["variables"] as $variable) {
+            printf("%-20.20s", $row[$variable]);
+            echo '|';
+        }
+        echo "\n";
+    }
+} else {
+    if ($modeRead) {
+        $response = $ENDPOINT->queryRead(file_get_contents($filename), $type);
+    } elseif ($modeWrite) {
+        $response = $ENDPOINT->queryUpdate(file_get_contents($filename), $type);
+    } else {
+        echo "ERROR : forget parameter after -r or -w (see --help)\n";
+        exit(1);
+    }
+
+    $err = $ENDPOINT->getErrors();
+
+    if ($err) {
+        echo "ERROR \n";
+        print_r($err, true);
+        exit(1);
+    }
+    echo $response;
+}
