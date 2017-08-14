@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * @git git@github.com:BorderCloud/SPARQL.git
  * @author Karima Rafes <karima.rafes@bordercloud.com>
@@ -6,35 +7,45 @@
  */
 namespace BorderCloud\SPARQL;
 
-class Net
+/**
+ * Class Network gives several tools : ping, port,...
+ *
+ * @package BorderCloud\SPARQL
+ */
+class Network
 {
-
     /**
-     * Ping a address
+     * Ping a service HTTP
      *
-     * @return int if -1 the server is down
-     * @access public
+     * @param string $address URL
+     * @return float if -1 the server is down
      */
     static function ping($address)
     {
         $urlInfo = parse_url($address);
         $domain = $urlInfo['host'];
-        $port = Net::getUrlPort($urlInfo);
-        $starttime = microtime(true);
-        $file = @fsockopen($domain, $port, $errno, $errstr, 10);
-        $stoptime = microtime(true);
-        $status = 0;
+        $port = Network::getUrlPort($urlInfo);
+        $startTime = microtime(true);
+        $file = @fsockopen($domain, $port, $errorNumber, $errorStr, 10);
+        $stopTime = microtime(true);
+        $status = 0.0;
 
         if (! $file) {
-            $status = - 1; // Site is down
+            $status = - 1.0; // Site is down
         } else {
             fclose($file);
-            $status = ($stoptime - $starttime) * 1000;
+            $status = ($stopTime - $startTime) * 1000;
             $status = floor($status);
         }
         return $status;
     }
 
+    /**
+     * Get the port writes in the protocol of URL
+     *
+     * @param $urlInfo
+     * @return int
+     */
     private static function getUrlPort($urlInfo)
     {
         if (isset($urlInfo['port'])) {

@@ -1,11 +1,12 @@
 <?php
+declare(strict_types=1);
+
 /**
  * @git git@github.com:BorderCloud/SPARQL.git
  * @author Karima Rafes <karima.rafes@bordercloud.com>
  * @license http://creativecommons.org/licenses/by-sa/4.0/
  */
 namespace BorderCloud\SPARQL;
-
 /**
  * Sparql HTTP Client for SPARQL1.1's Endpoint
  *
@@ -19,7 +20,7 @@ namespace BorderCloud\SPARQL;
  * use BorderCloud\SPARQL\Endpoint;
  *
  * $endpoint ="http://dbpedia.org/";
- * $sp_readonly = new Endpoint($endpoint);
+ * $sp_readonly = new SparqlClient($endpoint);
  * $q = "select * where {?x ?y ?z.} LIMIT 5";
  * $rows = $sp_readonly->query($q, 'rows');
  * $err = $sp_readonly->getErrors();
@@ -49,34 +50,29 @@ namespace BorderCloud\SPARQL;
  *
  * EXAMPLE to config : Virtuoso
  * ```php
- * $sp_readonly = new Endpoint("http://localhost/tests/",$modeRead,$modeDebug);
- * ```
- *
- * EXAMPLE to config : 4Store
- * ```php
- * $sp_readonly = new Endpoint("http://localhost/",$modeRead,$modeDebug);
+ * $sc_readonly = new SparqlClient("http://localhost/tests/",$modeRead,$modeDebug);
  * ```
  *
  * EXAMPLE to config : Sesame
  * ```php
- * $sp_readonly = new Endpoint("",$modeRead,$modeDebug);
- * $sp_readonly->setEndpointQuery("http://localhost/openrdf-sesame/repositories/tests");
- * $sp_readonly->setEndpointUpdate("http://localhost/openrdf-sesame/repositories/tests/statements");
+ * $sc_readonly = new SparqlClient("",$modeRead,$modeDebug);
+ * $sc_readonly->setEndpointQuery("http://localhost/openrdf-sesame/repositories/tests");
+ * $sc_readonly->setEndpointUpdate("http://localhost/openrdf-sesame/repositories/tests/statements");
  * ```
  *
  * EXAMPLE to config : Fuseki
  * ```php
- * $sp_readonly = new Endpoint("",$modeRead,$modeDebug);
- * $sp_readonly->setEndpointQuery("http://localhost/tests/query");
- * $sp_readonly->setEndpointUpdate("http://localhost/tests/update");
+ * $sc_readonly = new SparqlClient("",$modeRead,$modeDebug);
+ * $sc_readonly->setEndpointQuery("http://localhost/tests/query");
+ * $sc_readonly->setEndpointUpdate("http://localhost/tests/update");
  * ```
  *
  * EXAMPLE to config : Allegrograph
  * ```php
- * $sp_readonly = new Endpoint("",$modeRead,$modeDebug);
- * $sp_readonly->setEndpointQuery("http://localhost/repositories/tests");
- * $sp_readonly->setEndpointUpdate("http://localhost/repositories/tests");
- * $sp_readonly->setNameParameterQueryWrite("query");
+ * $sc_readonly = new SparqlClient("",$modeRead,$modeDebug);
+ * $sc_readonly->setEndpointQuery("http://localhost/repositories/tests");
+ * $sc_readonly->setEndpointUpdate("http://localhost/repositories/tests");
+ * $sc_readonly->setNameParameterQueryWrite("query");
  * ```
  *
  * With a query ASK, you can use the parameter 'raw'
@@ -88,8 +84,8 @@ namespace BorderCloud\SPARQL;
  * $q = "PREFIX a: <http://example.com/test/a/>
  * PREFIX b: <http://example.com/test/b/>
  * ask where { GRAPH <".$graph."> {a:A b:Name \"Test3\" .}} ";
- * $res = $sp_readonly->query($q, 'raw');
- * $err = $sp_readonly->getErrors();
+ * $res = $sc_readonly->query($q);
+ * $err = $sc_readonly->getErrors();
  * if ($err) {
  * print_r($err);
  * throw new Exception(print_r($err,true));
@@ -105,7 +101,7 @@ namespace BorderCloud\SPARQL;
  *
  * Example : send a query Insert
  * ```php
- * $sp_write = new Endpoint($MyEndPointSparql,$MyCode,$MyGraph);
+ * $sp_write = new SparqlClient($MyEndPointSparql,$MyCode,$MyGraph);
  * echo "\nInsert :";
  * $q = "
  * PREFIX a: <http://example.com/test/a/>
@@ -127,7 +123,7 @@ namespace BorderCloud\SPARQL;
  *
  * Example : send a query Delete
  * ```php
- * $sp_write = new Endpoint($MyEndPointSparql,$MyCode,$MyGraph);
+ * $sp_write = new SparqlClient($MyEndPointSparql,$MyCode,$MyGraph);
  *
  * echo "\nDelete :";
  * $q = "
@@ -145,40 +141,30 @@ namespace BorderCloud\SPARQL;
  * throw new Exception(print_r($err,true));
  * }
  * var_dump($res);
- * ```
  *
  * You can change the format of the response with the function
- * QueryRead and QueryUpdate.
+ * queryRead and queryUpdate.
  */
-class Endpoint extends Base
+final class SparqlClient extends Base
 {
-
     /**
-     * Root of the URL Endpoint
+     * URL of SPARQL endpoint to read
      *
      * @access private
      * @var string
      */
-    private $_endpoint_root;
+    private $_endpointRead;
 
     /**
-     * URL of Endpoint to read
+     * URL of SPARQL endpoint to write
      *
      * @access private
      * @var string
      */
-    private $_endpoint;
+    private $_endpointWrite;
 
     /**
-     * URL sparql to write
-     *
-     * @access private
-     * @var string
-     */
-    private $_endpoint_write;
-
-    /**
-     * in the constructor set debug to true in order to get usefull output
+     * in the constructor set debug to true in order to get useful output
      *
      * @access private
      * @var bool
@@ -186,20 +172,12 @@ class Endpoint extends Base
     private $_debug;
 
     /**
-     * in the constructor set the right to write or not in the store
-     *
-     * @access private
-     * @var string
-     */
-    private $_readOnly;
-
-    /**
      * in the constructor set the proxy_host if necessary
      *
      * @access private
      * @var string
      */
-    private $_proxy_host;
+    private $_proxyHost;
 
     /**
      * in the constructor set the proxy_port if necessary
@@ -207,12 +185,11 @@ class Endpoint extends Base
      * @access private
      * @var int
      */
-    private $_proxy_port;
+    private $_proxyPort;
 
     /**
      * Parser of XML result
      *
-     * @access private
      * @var ParserSparqlResult
      */
     private $_parserSparqlResult;
@@ -220,7 +197,6 @@ class Endpoint extends Base
     /**
      * Name of parameter HTTP to send a query SPARQL to read data.
      *
-     * @access private
      * @var string
      */
     private $_nameParameterQueryRead;
@@ -228,94 +204,73 @@ class Endpoint extends Base
     /**
      * Name of parameter HTTP to send a query SPARQL to write data.
      *
-     * @access private
      * @var string
      */
     private $_nameParameterQueryWrite;
 
     /**
-     * Method HTTP to send a query SPARQL to read data.
+     * Method HTTP to send a query SPARQL to read data : GET or POST
      *
-     * @access private
      * @var string
      */
-    private $_MethodHTTPRead;
+    private $_methodHTTPRead;
 
-    private $_MethodHTTPWrite;
+    /**
+     * Method HTTP to send a query SPARQL to read data : GET or POST
+     *
+     * @var string
+     */
+    private $_methodHTTPWrite;
 
+    /**
+     * SPARQL service login
+     *
+     * @var string
+     */
     private $_login;
 
+    /**
+     * SPARQL service password
+     *
+     * @var string
+     */
     private $_password;
 
     /**
-     * Constructor of Graph
+     * @var string
+     */
+    private $_lastError;
+
+    /**
+     * Constructor of SparqlClient
      *
-     * @param string $endpoint
-     *            : url of endpoint, example : http://lod.bordercloud.com/sparql
-     * @param boolean $readOnly
-     *            : true by default, if you allow the function query to write in the database
-     * @param boolean $debug
-     *            : false by default, set debug to true in order to get usefull output
-     * @param string $proxy_host
+     * @param bool $debug
+     *            : false by default, set debug to true in order to get useful output
+     * @param string $proxyHost
      *            : null by default, IP of your proxy
-     * @param string $proxy_port
+     * @param string $proxyPort
      *            : null by default, port of your proxy
      * @access public
      */
-    public function __construct($endpoint, $readOnly = true, $debug = false, $proxy_host = null, $proxy_port = null)
+    public function __construct($debug = false, $proxyHost = null, $proxyPort = null)
     {
         parent::__construct();
 
-        if ($readOnly) {
-            $this->_endpoint = $endpoint;
-        } else {
-            if (preg_match("|/sparql/?$|i", $endpoint)) {
-                $this->_endpoint = $endpoint;
-                $this->_endpoint_root = preg_replace("|^(.*/)sparql/?$|i", "$1", $endpoint);
-            } else {
-                $this->_endpoint_root = $endpoint;
-                $this->_endpoint = $this->_endpoint_root . "sparql/";
-            }
-        }
-
         $this->_debug = $debug;
-        $this->_endpoint_write = $this->_endpoint_root . "update/";
-        $this->_readOnly = $readOnly;
+        $this->_proxyHost = $proxyHost;
+        $this->_proxyPort = $proxyPort;
 
-        $this->_proxy_host = $proxy_host;
-        $this->_proxy_port = $proxy_port;
-
-        if ($this->_proxy_host != null && $this->_proxy_port != null) {
-            $this->_config = array(
-				/* remote endpoint */
-			  'remote_store_endpoint' => $this->_endpoint,
-				  /* network */
-			  'proxy_host' => $this->_proxy_host,
-                'proxy_port' => $this->_proxy_port
-            );
-        } else {
-            $this->_config = array(
-			/* remote endpoint */
-			  'remote_store_endpoint' => $this->_endpoint
-            );
-        }
-
-        // init parameter in the standard
+        $this->_methodHTTPRead = "POST";
+        $this->_methodHTTPWrite = "POST";
         $this->_nameParameterQueryRead = "query";
         $this->_nameParameterQueryWrite = "update";
 
         // init parser
         $this->_parserSparqlResult = new ParserSparqlResult();
 
-        // FIX for Wikidata
-        if ($endpoint == "https://query.wikidata.org/sparql") {
-            $this->_MethodHTTPRead = "GET";
-        } else {
-            $this->_MethodHTTPRead = "POST"; // by default
-        }
+        $this->_lastError = "";
     }
 
-    // FIX for WIKIDATA
     /**
      * Set the method HTTP to read
      *
@@ -325,8 +280,17 @@ class Endpoint extends Base
      */
     public function setMethodHTTPRead($method)
     {
-        $this->_MethodHTTPRead = $method;
+        $this->_methodHTTPRead = $method;
     }
+
+    /**
+     * Get the method HTTP to read
+     */
+    public function getMethodHTTPRead()
+    {
+        return $this->_methodHTTPRead;
+    }
+
 
     /**
      * Set the method HTTP to write
@@ -337,8 +301,17 @@ class Endpoint extends Base
      */
     public function setMethodHTTPWrite($method)
     {
-        $this->_MethodHTTPWrite = $method;
+        $this->_methodHTTPWrite = $method;
     }
+
+    /**
+     * Get the method HTTP to write
+     */
+    public function getMethodHTTPWrite()
+    {
+        return $this->_methodHTTPWrite;
+    }
+
 
     /**
      * Set the url to read
@@ -347,9 +320,13 @@ class Endpoint extends Base
      *            : endpoint's url to read
      * @access public
      */
-    public function setEndpointQuery($url)
+    public function setEndpointRead($url)
     {
-        $this->_endpoint = $url;
+        // FIX for Wikidata
+        if ($url == "https://query.wikidata.org/sparql") {
+            $this->_methodHTTPRead = "GET";
+        }
+        $this->_endpointRead = $url;
     }
 
     /**
@@ -358,9 +335,9 @@ class Endpoint extends Base
      * @return string $url : endpoint's url to read
      * @access public
      */
-    public function getEndpointQuery()
+    public function getEndpointRead()
     {
-        return $this->_endpoint;
+        return $this->_endpointRead;
     }
 
     /**
@@ -370,9 +347,9 @@ class Endpoint extends Base
      *            : endpoint's url to write
      * @access public
      */
-    public function setEndpointUpdate($url)
+    public function setEndpointWrite($url)
     {
-        $this->_endpoint_write = $url;
+        $this->_endpointWrite = $url;
     }
 
     /**
@@ -381,9 +358,9 @@ class Endpoint extends Base
      * @return string $url : endpoint's url to write
      * @access public
      */
-    public function getEndpointUpdate()
+    public function getEndpointWrite()
     {
-        return $this->_endpoint_write;
+        return $this->_endpointWrite;
     }
 
     /**
@@ -406,7 +383,7 @@ class Endpoint extends Base
      */
     public function getNameParameterQueryWrite()
     {
-        return $this->_nameparameterQueryWrite;
+        return $this->_nameParameterQueryWrite;
     }
 
     /**
@@ -429,7 +406,7 @@ class Endpoint extends Base
      */
     public function getNameParameterQueryRead()
     {
-        return $this->_nameparameterQueryRead;
+        return $this->_nameParameterQueryRead;
     }
 
     /**
@@ -479,14 +456,25 @@ class Endpoint extends Base
     }
 
     /**
-     * Check if the server is up.
+     * Check if the SPARQL endpoint for reading is up.
      *
-     * @return boolean true if the triplestore is up.
+     * @return bool true if the service is up.
      * @access public
      */
-    public function check()
+    public function checkEndpointRead()
     {
-        return Net::ping($this->_endpoint) != - 1;
+        return Network::ping($this->_endpointRead) != - 1;
+    }
+
+    /**
+     * Check if the SPARQL endpoint for writing is up.
+     *
+     * @return bool true if the service is up.
+     * @access public
+     */
+    public function checkEndpointWrite()
+    {
+        return Network::ping($this->_endpointWrite) != - 1;
     }
 
     /**
@@ -495,19 +483,19 @@ class Endpoint extends Base
      * <ul>
      * <li>rows to return array of results
      * <li>row to return array of first result
-     * <li>raw to return boolean for request ask, insert and delete
+     * <li>raw to return bool for request ask, insert and delete
      * </ul>
      *
      * @param string $q
      *            : Query SPARQL
      * @param string $result_format
      *            : Optional, rows, row or raw
-     * @return array|boolean in function of parameter $result_format
+     * @return array|bool in function of parameter $result_format
      * @access public
      */
     public function query($q, $result_format = 'rows')
     {
-        $t1 = Endpoint::mtime();
+        $t1 = SparqlClient::mtime();
         $result = null;
         switch ($result_format) {
             case "json":
@@ -523,42 +511,35 @@ class Endpoint extends Base
                 } else {
                     $response = $this->queryRead($q);
                 }
-                $parser = $this->_parserSparqlResult->getParser();
-                $success = xml_parse($parser, $response, true);
-                $result = $this->_parserSparqlResult->getResult();
-                if (! $success) { // if(! array_key_exists("result",$result)){
-                    $message = "Error parsing XML result:" . xml_error_string(xml_get_error_code($parser)) . ' Response : ' . $response . "\n";
-                    $error = $this->errorLog($q, null, $this->_endpoint, 200, $message);
-                    $this->addError($error);
-                    return false;
+                if(! empty($response)){
+                    $parser = $this->_parserSparqlResult->getParser();
+                    $success = xml_parse($parser, $response, true);
+                    $result = $this->_parserSparqlResult->getResult();
+                    if (! $success) { // if(! array_key_exists("result",$result)){
+                        $message = "Error parsing XML result:" . xml_error_string(xml_get_error_code($parser)) . ' Response : ' . $response . "\n";
+                        $error = $this->errorLog($q, null, $this->_endpointRead, 200, $message);
+                        $this->addError($error);
+                        return false;
+                    }
+                }else{
+                    $result = array();
                 }
         }
-        $result['query_time'] = Endpoint::mtime() - $t1;
-        switch ($result_format) {
-            case "row":
-                return $result["result"]["rows"][0];
-            case "raw":
-                return $result["result"]["rows"][0][$result["result"]["variables"][0]];
-            case "json":
-            default: // rows
-                return $result;
+        $result['query_time'] = SparqlClient::mtime() - $t1;
+        if(array_key_exists('boolean',$result)) { // ASK query
+            return $result["boolean"];
+        }else{ // other
+            switch ($result_format) {
+                case "row":
+                    return $result["result"]["rows"][0];
+                case "raw":
+                     return $result["result"]["rows"][0][$result["result"]["variables"][0]];
+                case "json":
+                default: // rows
+                    return $result;
+            }
         }
     }
-
-    /*
-     * public function queryConstruct($q) {
-     * $t1 = Endpoint::mtime();
-     * $result = null;
-     *
-     * $response = $this->queryRead($q,"text/turtle");
-     * return $response;
-     * $result = ParserTurtle::turtle_to_array($response,"");
-     *
-     * $result['query_time'] = Endpoint::mtime() - $t1 ;
-     *
-     * return $result;
-     * }
-     */
 
     /**
      * Send a request SPARQL of type select or ask to endpoint directly and output the response
@@ -576,42 +557,43 @@ class Endpoint extends Base
     public function queryRead($query, $typeOutput = "application/sparql-results+xml")
     {
         $client = $this->initCurl();
-        $sUri = $this->_endpoint;
+        $sUri = $this->_endpointRead;
         $response = "";
 
         if ($typeOutput == null) {
             $data = array(
                 $this->_nameParameterQueryRead => $query
             );
-            if ($this->_MethodHTTPRead == "POST") {
-                $response = $client->send_post_data($sUri, $data);
+            if ($this->_methodHTTPRead == "POST") {
+                $response = $client->sendPostData($sUri, $data);
             } else {
-                $response = $client->fetch_url($sUri, $data); // fix for wikidata
+                $response = $client->fetchUrl($sUri, $data); // fix for wikidata
             }
         } else {
             $data = array(
                 $this->_nameParameterQueryRead => $query,
-                "output" => ConversionMimetype::getShortnameOfMimetype($typeOutput), // possible fix for 4store/fuseki..
+                "output" => Mimetype::getShortNameOfMimetype($typeOutput), // possible fix for 4store/fuseki..
                 "Accept" => $typeOutput
             ); // fix for sesame
                                       // print_r($data);
-            if ($this->_MethodHTTPRead == "POST") {
-                $response = $client->send_post_data($sUri, $data, array(
+            if ($this->_methodHTTPRead == "POST") {
+                $response = $client->sendPostData($sUri, $data, array(
                     'Accept: ' . $typeOutput
                 ));
             } else {
-                $response = $client->fetch_url($sUri, $data); // fix for wikidata
+                $response = $client->fetchUrl($sUri, $data); // fix for wikidata
             }
         }
 
-        $code = $client->get_http_response_code();
-
-        $this->debugLog($query, $sUri, $code, $response);
+        $code = $client->getHttpResponseCode();
 
         if (($code < 200 || $code >= 300)) {
-            $error = $this->errorLog($query, $data, $sUri, $code, $response . $client->get_error_msg());
+            $error = $this->errorLog($query, $data, $sUri, $code, $response ."\n". $client->getErrorMsg());
             $this->addError($error);
+            $this->_lastError = $response;
             return false;
+        }else{
+            $this->debugLog($query, $sUri, $code, $response);
         }
         return $response;
     }
@@ -627,64 +609,98 @@ class Endpoint extends Base
      *            : Query Sparql of type insert data or delete data only
      * @param string $typeOutput
      *            by default "application/sparql-results+xml",
-     * @return boolean true if it did or false if error (to do getErrors())
+     * @return bool true if it did or false if error (to do getErrors())
      * @access public
      */
     public function queryUpdate($query, $typeOutput = "application/sparql-results+xml")
     {
-        if ($this->_readOnly) {
-            $message = "Sorry, you have not the right to update the database.\n";
-            $error = $this->errorLog('', null, $this->_endpoint, 0, $message);
+        if (empty($this->_endpointWrite)) {
+            $message = "Sorry, you have not configure the endpoint to update the database.\n";
+            $error = $this->errorLog('', null, $this->_endpointWrite, 0, $message);
             $this->addError($error);
             return false;
         }
 
         $client = $this->initCurl();
-        $sUri = $this->_endpoint_write;
+        $sUri = $this->_endpointWrite;
         $response = "";
 
         if ($typeOutput == null) {
             $data = array(
                 $this->_nameParameterQueryWrite => $query
             );
-            if ($this->_MethodHTTPWrite == "POST") {
-                $response = $client->send_post_data($sUri, $data);
+            if ($this->_methodHTTPWrite == "POST") {
+                $response = $client->sendPostData($sUri, $data);
             } else {
-                $response = $client->fetch_url($sUri, $data); // fix for wikidata
+                $response = $client->fetchUrl($sUri, $data); // fix for wikidata
             }
         } else {
             $data = array(
                 $this->_nameParameterQueryWrite => $query,
-                // "output" => ConversionMimetype::getShortnameOfMimetype($typeOutput), //possible fix for 4store/fuseki..
+                // "output" => ConversionMimetype::getShortNameOfMimetype($typeOutput), //possible fix for
+                // 4store/fuseki..
                 "Accept" => $typeOutput
             ); // fix for sesame
                                       // print_r($data);
-            if ($this->_MethodHTTPWrite == "POST") {
-                $response = $client->send_post_data($sUri, $data, array(
+            if ($this->_methodHTTPWrite == "POST") {
+                $response = $client->sendPostData($sUri, $data, array(
                     'Accept: ' . $typeOutput
                 ));
             } else {
-                $response = $client->fetch_url($sUri, $data); // fix for wikidata
+                $response = $client->fetchUrl($sUri, $data); // fix for wikidata
             }
         }
 
-        $code = $client->get_http_response_code();
+        $code = $client->getHttpResponseCode();
 
-        $this->debugLog($query, $sUri, $code, $response);
 
         if ($code < 200 || $code >= 300) {
-            $error = $this->errorLog($query, $data, $sUri, $code, $response);
+            $error = $this->errorLog($query, $data, $sUri, $code, $response ."\n". $client->getErrorMsg());
             $this->addError($error);
+            $this->_lastError = $response;
             return false;
+        }else{
+            $this->debugLog($query, $sUri, $code, $response);
         }
         // echo "OK".$response;
         return $response;
     }
 
     /**
+     * Get last message for Sparql editor, ie print only the error syntax message.
+     *
+     * Message supported for the moment :
+     *  - Wikidata
+     *  - Virtuoso 7
+     *
+     * @return string
+     */
+    public function getLastError()
+    {
+        $message = "";
+
+        if (preg_match('#QueryException: (.*)\n\s*at java.#sU',
+            $this->_lastError,
+            $matches)) { // for Wikidata
+            $message = $matches[1];
+        }else  if (preg_match('#SPARQL compiler,\s*([^\s].*)\n#sU',
+            $this->_lastError,
+            $matches)){ // for Virtuoso
+            $message = $matches[1];
+        } else { //others
+            $message = $this->_lastError;
+        }
+        return $message;
+    }
+
+    /**
      * *********************************************************************
      */
     // PRIVATE Function
+    /**
+     * TODO
+     * @return float
+     */
     static function mtime()
     {
         list ($msec, $sec) = explode(" ", microtime());
@@ -693,19 +709,28 @@ class Endpoint extends Base
 
     /**
      * write error for human
+     * TODO :logs ? https://github.com/Seldaek/monolog
      *
      * @param string $query
+     * @param $data
      * @param string $endPoint
-     * @param number $httpcode
+     * @param int $httpcode
      * @param string $response
-     * @access private
+     * @return string
      */
     private function errorLog($query, $data, $endPoint, $httpcode = 0, $response = '')
     {
-        $error = "Error query  : " . $query . "\n" . "Error endpoint: " . $endPoint . "\n" . "Error http_response_code: " . $httpcode . "\n" . "Error message: " . $response . "\n";
-        "Error data: " . print_r($data, true) . "\n";
+        $error =
+            "Error query  : " . $query . "\n" .
+            "Error endpoint: " . $endPoint . "\n" .
+            "Error http_response_code: " . $httpcode . "\n" .
+            "Error message: " . $response . "\n";
+
+        $error .= "Error data: " . print_r($data, true) . "\n";
         if ($this->_debug) {
-            echo '=========================>>>>>>' . $error;
+            echo "\nDEBUG MESSAGE ERROR #######################\n" .
+                $error .
+                "\n#######################\n" ;
         } else {
             error_log($error);
         }
@@ -713,18 +738,23 @@ class Endpoint extends Base
     }
 
     /**
-     * Print infos
+     * Print logs
+     * TODO : change logs
      *
-     * @param unknown_type $query
-     * @param unknown_type $endPoint
-     * @param unknown_type $httpcode
-     * @param unknown_type $response
-     * @access private
+     * @param string $query
+     * @param string $endPoint
+     * @param string $httpcode
+     * @param string $response
      */
     private function debugLog($query, $endPoint, $httpcode = '', $response = '')
     {
         if ($this->_debug) {
-            $error = "\n#######################\n" . "query				: " . $query . "\n" . "endpoint			: " . $endPoint . "\n" . "http_response_code	: " . $httpcode . "\n" . "message			: " . $response . "\n#######################\n";
+            $error = "\nDEBUG MESSAGE #######################\n" .
+                "query				: " . $query . "\n" .
+                "endpoint			: " . $endPoint . "\n" .
+                "http_response_code	: " . $httpcode . "\n" .
+                "message			: " . $response .
+                "\n#######################\n";
 
             echo $error;
         }
@@ -733,17 +763,16 @@ class Endpoint extends Base
     /**
      * Init an object Curl in function of proxy.
      *
-     * @return an object of type Curl
-     * @access private
+     * @return Curl
      */
     private function initCurl()
     {
         $objCurl = new Curl(); // $this->_debug
-        if ($this->_proxy_host != null && $this->_proxy_port != null) {
-            $objCurl->set_proxy($this->_proxy_host . ":" . $this->_proxy_port);
+        if ($this->_proxyHost != null && $this->_proxyPort != null) {
+            $objCurl->setProxy($this->_proxyHost . ":" . $this->_proxyPort);
         }
         if ($this->_login != null && $this->_password != null) {
-            $objCurl->set_credentials($this->_login, $this->_password);
+            $objCurl->setCredentials($this->_login, $this->_password);
         }
         return $objCurl;
     }

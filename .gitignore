@@ -13,7 +13,8 @@
 # Temporary files
 .temp/
 tmp/
-/output
+output/
+doc_old/
 
 # Files related to applying patches
 *.rej
@@ -67,3 +68,8 @@ local.properties
 
 # PDT-specific
 .buildpath
+
+#################
+## PHPStorm
+#################
+.idea/

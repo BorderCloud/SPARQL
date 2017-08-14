@@ -1,14 +1,17 @@
 <?php
-use BorderCloud\SPARQL\Endpoint;
+declare(strict_types=1);
+
+use BorderCloud\SPARQL\SparqlClient;
 
 require_once ('../vendor/autoload.php');
 
-$endpoint = "https://query.wikidata.org/bigdata/namespace/wdq/sparql";
-$sp_readonly = new Endpoint($endpoint);
-// $sp_readonly->setMethodHTTP("GET");
+$endpoint = "https://query.wikidata.org/sparql";
+$sc = new SparqlClient();
+$sc->setEndpointRead($endpoint);
+//$sc->setMethodHTTPRead("GET");
 $q = "select *  where {?x ?y ?z.} LIMIT 5";
-$rows = $sp_readonly->query($q, 'rows');
-$err = $sp_readonly->getErrors();
+$rows = $sc->query($q, 'rows');
+$err = $sc->getErrors();
 if ($err) {
     print_r($err);
     throw new Exception(print_r($err, true));

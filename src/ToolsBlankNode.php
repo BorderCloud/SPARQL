@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * @git git@github.com:BorderCloud/SPARQL.git
  * @author Karima Rafes <karima.rafes@bordercloud.com>
@@ -6,12 +7,22 @@
  */
 namespace BorderCloud\SPARQL;
 
+/**
+ * Class ToolsBlankNode
+ * TODO
+ *
+ * @package BorderCloud\SPARQL
+ */
 class ToolsBlankNode
 {
-
+    /**
+     * TODO
+     *
+     * @param $set
+     * @return array
+     */
     public static function removeDuplicate($set)
     {
-        $find = false;
         $result = array();
         foreach ($set as $key1 => $value1) {
             $find = false;
@@ -28,7 +39,13 @@ class ToolsBlankNode
         return $result;
     }
 
-    public static function AllPermutations($set)
+    /**
+     * TODO
+     *
+     * @param $set
+     * @return array
+     */
+    public static function allPermutations($set)
     {
         $solutions = array();
         $solutions[] = $set;
@@ -56,7 +73,14 @@ class ToolsBlankNode
         return $solutions;
     }
 
-    public static function array_diff_assoc_unordered($rows1, $rows2)
+    /**
+     * TODO
+     *
+     * @param $rows1
+     * @param $rows2
+     * @return array
+     */
+    public static function arrayDiffAssocUnordered($rows1, $rows2)
     {
         $difference = array();
 
@@ -76,12 +100,12 @@ class ToolsBlankNode
         $clone1 = $rows1;
         $clone2 = $rows2;
 
-        // echo "AVANT";
+        // echo "BEFORE";
         // print_r($clone1);
         // print_r($clone2);
         foreach ($rows1 as $key1 => &$value1) {
-            $tmpclone2 = $clone2;
-            foreach ($tmpclone2 as $key2 => &$value2) {
+            $tmpClone2 = $clone2;
+            foreach ($tmpClone2 as $key2 => &$value2) {
                 // echo "-------------";
                 // print_r($value1);
                 // print_r($value2);
@@ -91,7 +115,7 @@ class ToolsBlankNode
                     break;
                 }
             }
-            // echo "-------------APRES";
+            // echo "-------------AFTER";
             // print_r($clone1);
             // print_r($clone2);
         }
@@ -106,7 +130,14 @@ class ToolsBlankNode
         return $difference;
     }
 
-    public static function array_diff_assoc_recursive($array1, $array2)
+    /**
+     * TODO
+     *
+     * @param $array1
+     * @param $array2
+     * @return array
+     */
+    public static function arrayDiffAssocRecursive($array1, $array2)
     {
         $difference = array();
         foreach ($array1 as $key => $value) {
@@ -115,7 +146,7 @@ class ToolsBlankNode
                     $difference[1][$key] = $value;
                     $difference[2][$key] = "Not set";
                 } else {
-                    $new_diff = self::array_diff_assoc_recursive($value, $array2[$key]);
+                    $new_diff = self::arrayDiffAssocRecursive($value, $array2[$key]);
                     if (count($new_diff) > 0) {
                         $difference[1][$key] = $new_diff[1];
                         $difference[2][$key] = $new_diff[2];
@@ -123,7 +154,7 @@ class ToolsBlankNode
                 }
             } else if (! array_key_exists($key, $array2)) {
                 $difference[1][$key] = $value;
-                $difference[2][$key] = "Key doesnt exist";
+                $difference[2][$key] = "Key doesn't exist";
             } else if ($array2[$key] !== $value) {
                 $difference[1][$key] = $value;
                 $difference[2][$key] = $array2[$key];
@@ -131,34 +162,4 @@ class ToolsBlankNode
         }
         return $difference;
     }
-
-    /* function array_diff_assoc_recursive_with_blanknode($array1, $array2) {
-     * $difference=array();
-     * $node = array();
-     * foreach($array1 as $key => $value) {
-     * if( is_array($value) ) {
-     * if( !isset($array2[$key]) || !is_array($array2[$key]) ) {
-     * $difference[$key] = $value;
-     * } else {
-     * $new_diff = Tools::array_diff_assoc_recursive_with_blanknode($value, $array2[$key]);
-     * if( !empty($new_diff) )
-     * $difference[$key] = $new_diff;
-     * }
-     * } else if( !array_key_exists($key,$array2) ) {
-     * $difference[$key] = $value;
-     * } else if( $array2[$key] !== $value && floatval($array2[$key]) !== floatval($value)) {
-     * if(isset($value[0]) && $value[0] == "_"){//(array_key_exists("type",$array1) && $array1["type"] == "bnode"){
-     * if(!array_key_exists($value,$node )){
-     * $node[$value] = $array2[$key];
-     * }else if($node[$value] !== $array2[$key] ){
-     * $difference[$key] = $value;
-     * }
-     * }else{
-     * $difference[$key] = $value;
-     * }
-     * }
-     * }
-     * return $difference;
-     * }
-     */
 }

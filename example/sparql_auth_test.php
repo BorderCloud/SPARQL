@@ -1,5 +1,7 @@
 <?php
-use BorderCloud\SPARQL\Endpoint;
+declare(strict_types=1);
+
+use BorderCloud\SPARQL\SparqlClient;
 
 // git clone https://github.com/BorderCloud/SPARQL
 // ./query -r -e https://example.com/sparql-auth -f ./example/queryRead1.rq -l login -p password -v
@@ -7,12 +9,11 @@ use BorderCloud\SPARQL\Endpoint;
 require_once ('../vendor/autoload.php');
 
 $endpoint = "http://example.com/sparql-auth/";
-$sp_ReadAndWrite = new Endpoint($endpoint, false, true);
-$sp_ReadAndWrite->setEndpointQuery($endpoint);
-$sp_ReadAndWrite->setEndpointUpdate($endpoint);
-
-$sp_ReadAndWrite->setLogin("test");
-$sp_ReadAndWrite->setPassword("test!");
+$sc = new SparqlClient(true); //debug enable
+$sc->setEndpointRead($endpoint);
+$sc->setEndpointWrite($endpoint);
+$sc->setLogin("test");
+$sc->setPassword("test!");
 
 /*
  * PREFIX dct: <http://purl.org/dc/terms/>
@@ -43,9 +44,9 @@ INSERT
 }
 EOT;
 
-$sp_ReadAndWrite->ResetErrors();
-$rows = $sp_ReadAndWrite->query($q, 'raw');
-$err = $sp_ReadAndWrite->getErrors();
+$sc->ResetErrors();
+$rows = $sc->query($q, 'raw');
+$err = $sc->getErrors();
 if ($err) {
     print_r($err);
 }

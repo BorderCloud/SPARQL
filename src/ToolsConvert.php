@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * @git git@github.com:BorderCloud/SPARQL.git
  * @author Karima Rafes <karima.rafes@bordercloud.com>
@@ -6,9 +7,21 @@
  */
 namespace BorderCloud\SPARQL;
 
+/**
+ * Class ToolsConvert
+ * TODO
+ *
+ * @package BorderCloud\SPARQL
+ */
 class ToolsConvert
 {
 
+    /**
+     * TODO
+     *
+     * @param $val
+     * @return bool
+     */
     public static function isTrueFloat($val)
     {
         $pattern = '/^[+-]?(\d*\.\d+([eE]?[+-]?\d+)?|\d+[eE][+-]?\d+)$/';

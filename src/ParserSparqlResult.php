@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * @git git@github.com:BorderCloud/SPARQL.git
  * @author Karima Rafes <karima.rafes@bordercloud.com>
@@ -6,23 +7,45 @@
  */
 namespace BorderCloud\SPARQL;
 
+/**
+ * Class ParserSparqlResult
+ * @package BorderCloud\SPARQL
+ */
 class ParserSparqlResult extends Base
 {
 
+    /**
+     * @var array
+     */
     private $_result;
 
+    /**
+     * @var
+     */
     private $_rowCurrent;
 
+    /**
+     * @var
+     */
     private $_cellCurrent;
 
+    /**
+     * @var
+     */
     private $_value;
 
+    /**
+     * ParserSparqlResult constructor.
+     */
     public function __construct()
     {
         parent::__construct();
         $this->_result = array();
     }
 
+    /**
+     * @return resource
+     */
     public function getParser()
     {
         $objectParser = xml_parser_create();
@@ -36,15 +59,26 @@ class ParserSparqlResult extends Base
         return $objectParser;
     }
 
+    /**
+     * @return array
+     */
     public function getResult()
     {
         return $this->_result;
     }
 
-    // callback for the start of each element
-    public function startElement($parser_object, $elementname, $attribute)
+    /**
+     * callback for the start of each element
+     *
+     * @param $parserObject
+     * @param $elementname
+     * @param $attribute
+     */
+    public function startElement($parserObject, $elementname, $attribute)
     {
         if ($elementname == "sparql") {
+            // init a new response
+            unset($this->_result['boolean']); // clean ASK response
             $this->_result['result'] = array();
         } else if ($elementname == "head") {
             $this->_result['result']['variables'] = array();
@@ -68,11 +102,18 @@ class ParserSparqlResult extends Base
             if (isset($attribute['datatype'])) {
                 $this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent . " datatype"] = $attribute['datatype'];
             }
+        } else if ($elementname == "boolean") {
+            $this->_cellCurrent = "boolean" ;
         }
     }
 
-    // callback for the end of each element
-    public function endElement($parser_object, $elementname)
+    /**
+     * callback for the end of each element
+     *
+     * @param $parserObject
+     * @param $elementname
+     */
+    public function endElement($parserObject, $elementname)
     {
         if ($elementname == "binding") {
 
@@ -108,11 +149,18 @@ class ParserSparqlResult extends Base
             }
             $this->_cellCurrent = null;
             $this->_value = "";
+        }else if ($elementname == "boolean") {
+            $this->_result['boolean']= $this->_value == "true" ? true : false;
         }
     }
 
-    // callback for the content within an element
-    public function contentHandler($parser_object, $data)
+    /**
+     * callback for the content within an element
+     *
+     * @param $parserObject
+     * @param $data
+     */
+    public function contentHandler($parserObject, $data)
     {
         if ($this->_cellCurrent != null) {
             // echo "DATA". $data." - ".$this->_cellCurrent."\n";
@@ -120,6 +168,12 @@ class ParserSparqlResult extends Base
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param $array
+     * @return mixed
+     */
     public function sortResult($array)
     {
         $result = $array;
@@ -128,6 +182,13 @@ class ParserSparqlResult extends Base
         return $result;
     }
 
+    /**
+     * TODO
+     *
+     * @param $row1
+     * @param $row2
+     * @return int
+     */
     public function mySortResult($row1, $row2)
     {
         $result = 0;
@@ -161,6 +222,15 @@ class ParserSparqlResult extends Base
         return $result;
     }
 
+    /**
+     * TODO write comment and clean
+     *
+     * @param $rs1
+     * @param $rs2
+     * @param bool $ordered
+     * @param bool $distinct
+     * @return array
+     */
     public static function compare($rs1, $rs2, $ordered = false, $distinct = false)
     {
         $difference = array();
@@ -173,8 +243,7 @@ class ParserSparqlResult extends Base
             return $difference; // return false ;
         }
 
-        // Check if there are blanknodes//////////////////////
-        // ref : http://blog.datagraph.org/2010/03/rdf-isomorphism
+        // Check if there are blanknodes ref : http://blog.datagraph.org/2010/03/rdf-isomorphism
 
         // 1.Compare graph sizes and all statements without blank nodes. If they do not match, fail.
         // 1.1 remove blank nodes
@@ -191,13 +260,13 @@ class ParserSparqlResult extends Base
         $bnodesInRs1 = array();
         $bnodesInRs2 = array();
 
-        // echo "AVANT";
+        // echo "BEFORE";
         // print_r($clone1);
         // print_r($clone2);
         foreach ($clone1WithoutBlanknodes as $key => &$row) {
             $arrayVariableTypeBnode = array_keys($row, "bnode");
             foreach ($arrayVariableTypeBnode as $variableTypeBnode) {
-                $variableArray = split(" ", $variableTypeBnode);
+                $variableArray = explode(" ", $variableTypeBnode);
                 $variable = $variableArray[0];
                 $bnodesInRs1[] = $row[$variable];
                 $row[$variable] = "BLANKNODE"; // remove
@@ -206,7 +275,7 @@ class ParserSparqlResult extends Base
         foreach ($clone2WithoutBlanknodes as $key => &$row) {
             $arrayVariableTypeBnode = array_keys($row, "bnode");
             foreach ($arrayVariableTypeBnode as $variableTypeBnode) {
-                $variableArray = split(" ", $variableTypeBnode);
+                $variableArray = explode(" ", $variableTypeBnode);
                 $variable = $variableArray[0];
                 $bnodesInRs2[] = $row[$variable];
                 $row[$variable] = "BLANKNODE"; // remove
@@ -217,9 +286,11 @@ class ParserSparqlResult extends Base
         // print_r($clone2WithoutBlanknodes);
         // 1.2 compare
         if ($ordered) {
-            $difference = ToolsBlankNode::array_diff_assoc_recursive($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
+            $difference = ToolsBlankNode::arrayDiffAssocRecursive($clone1WithoutBlanknodes,
+                $clone2WithoutBlanknodes);
         } else {
-            $difference = ToolsBlankNode::array_diff_assoc_unordered($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
+            $difference = ToolsBlankNode::arrayDiffAssocUnordered($clone1WithoutBlanknodes,
+                $clone2WithoutBlanknodes);
         }
 
         // Check if there are blank nodes
@@ -232,20 +303,13 @@ class ParserSparqlResult extends Base
         if (count($bnodesInRs1) != count($bnodesInRs2)) {
             $difference[1] = "Nb bnode :" . count($bnodesInRs1);
             $difference[2] = "Nb bnode :" . count($bnodesInRs2);
-            return $difference; // return false ;
+            return $difference;
         }
 
-        // echo "BLANKNODE\n";
-        // print_r($bnodesInRs1);
-        // print_r($bnodesInRs2);
         $clone1 = $rs1['result']['rows'];
-        // print_r($clone1);
-        // $clone2 = $rs2['result']['rows'];
-        // 2.Repeat, for each graph:
-        $arrayPermutationsBnode = ToolsBlankNode::AllPermutations($bnodesInRs2);
-        // echo "PERMUTATION\n";
-        // print_r($arrayPermutationsBnode );
-        // exit();
+
+        $arrayPermutationsBnode = ToolsBlankNode::allPermutations($bnodesInRs2);
+
         foreach ($arrayPermutationsBnode as $permute) {
             $clone2 = $rs2['result']['rows'];
 
@@ -253,78 +317,24 @@ class ParserSparqlResult extends Base
             foreach ($clone2 as $key => &$row) {
                 $arrayVariableTypeBnode = array_keys($row, "bnode");
                 foreach ($arrayVariableTypeBnode as $variableTypeBnode) {
-                    $variableArray = split(" ", $variableTypeBnode);
+                    $variableArray = explode(" ", $variableTypeBnode);
                     $variable = $variableArray[0];
 
                     $row[$variable] = $bnodesInRs1[array_search($row[$variable], $permute)];
                 }
             }
-            // print_r($clone2);
-            // $difference = self::sub_array_diff_assoc_unordered( $clone1,$clone2) ;
+
             if ($ordered) {
-                $difference = ToolsBlankNode::array_diff_assoc_recursive($clone1, $clone2);
+                $difference = ToolsBlankNode::arrayDiffAssocRecursive($clone1, $clone2);
             } else {
-                $difference = ToolsBlankNode::array_diff_assoc_unordered($clone1, $clone2);
+                $difference = ToolsBlankNode::arrayDiffAssocUnordered($clone1, $clone2);
             }
 
             if (count($difference) == 0) {
-                return $difference; // true
+                return $difference;
             }
         }
 
         return $difference;
     }
-
-    /* private static function sub_array_diff_assoc_unordered( $rows1, $rows2) {
-     * $difference=array();
-     *
-     * //B/ Check the result set have the same number of rows.
-     * if(count($rows1) != count($rows2)) {
-     * $difference[1]="Nb rows :".count($rows1);
-     * $difference[2]="Nb rows :".count($rows2);
-     * return $difference; //return false ;
-     * }
-     *
-     * //C/ Pick a row from the test results, scan the expected results
-     * // to find a row with same variable/value bindings, and remove
-     * // from the expected results. If all test rows, match then
-     * // (because of B) the result sets have the same rows.
-     * //
-     * //return equivalent(convert(rs1), convert(rs2), new BNodeIso(NodeUtils.sameValue)) ;
-     * $clone1 = $rows1;
-     * $clone2 = $rows2;
-     *
-     * // echo "AVANT";
-     * // print_r($clone1);
-     * // print_r($clone2);
-     * foreach ($rows1 as $key1=>&$value1) {
-     * $tmpclone2 = $clone2;
-     * foreach ($tmpclone2 as $key2=>&$value2) {
-     *
-     * //echo "-------------";
-     * //print_r($value1);
-     * //print_r($value2);
-     * if(count(array_diff_assoc($value1,$value2)) == 0 &&
-     * count(array_diff_assoc($value2,$value1)) == 0 ){
-     * unset($clone1[$key1]);
-     * unset($clone2[$key2]);
-     * break;
-     * }
-     * }
-     * //echo "-------------APRES";
-     * //print_r($clone1);
-     * //print_r($clone2);
-     * }
-     *
-     * if(count($clone1) != 0 ||
-     * count($clone2) != 0 ){
-     * $difference[1]=$clone1;
-     * $difference[2]=$clone2;
-     * $difference[1]=$clone1;
-     * $difference[2]=$clone2;
-     * return $difference; //return false ;
-     * }
-     * return $difference;
-     * }
-     */
 }

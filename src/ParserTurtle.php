@@ -1,4 +1,5 @@
- <?php
+<?php
+declare(strict_types=1);
 /**
  * @git git@github.com:BorderCloud/SPARQL.git
  * @author Karima Rafes <karima.rafes@bordercloud.com>
@@ -6,10 +7,23 @@
  */
 namespace BorderCloud\SPARQL;
 
+/**
+ * Class ParserTurtle
+ * TODO
+ *
+ * @package BorderCloud\SPARQL
+ */
 class ParserTurtle
 {
-
-    public static function turtle_to_array($turtle, $baseGraph, $idMD5 = false)
+    /**
+     * TODO
+     *
+     * @param $turtle
+     * @param $baseGraph
+     * @param bool $idMD5
+     * @return array
+     */
+    public static function turtleToArray($turtle, $baseGraph, $idMD5 = false)
     {
         $tabResult = array();
         $tabResult["prefix"] = array();
@@ -61,6 +75,13 @@ class ParserTurtle
         return $tabResult;
     }
 
+    /**
+     * TODO
+     *
+     * @param $uri
+     * @param $prefix
+     * @return float|int|string
+     */
     public static function relativeToExplicitURI($uri, $prefix)
     {
         $result = $uri;
@@ -90,9 +111,9 @@ class ParserTurtle
         } elseif (preg_match("/^<#([^:]+)>$/i", $uri, $matches)) { // <#truc>
             $result = "<" . $prefix["base"] . $matches[1] . ">";
         } elseif (preg_match("/^<([^:]+)>$/i", $uri, $matches)) { // <truc>
-            $len = strlen($prefix["base"]);
-            $prefixbase = substr($prefix["base"], 0, strrpos($prefix["base"], "/"));
-            $result = "<" . $prefixbase . $matches[1] . ">";
+            // $len = strlen($prefix["base"]);
+            $prefixBase = substr($prefix["base"], 0, strrpos($prefix["base"], "/"));
+            $result = "<" . $prefixBase . $matches[1] . ">";
         } elseif (preg_match("/^:([^\s]*)$/i", $uri, $matches)) { // :truc
             $result = "<" . $prefix["empty"] . $matches[1] . ">";
         } elseif (preg_match("/^([^:_]*):([^><]*)$/i", $uri, $matches)) { // x:truc
@@ -109,6 +130,13 @@ class ParserTurtle
         return $result;
     }
 
+    /**
+     * TODO
+     *
+     * @param $itm1
+     * @param $itm2
+     * @return int
+     */
     static function mySortTriples($itm1, $itm2)
     {
         if ($itm1["s"] > $itm2["s"]) {
@@ -132,6 +160,12 @@ class ParserTurtle
         }
     }
 
+    /**
+     * TODO
+     *
+     * @param $arrayTurtle
+     * @return mixed
+     */
     static function sortTriples($arrayTurtle)
     {
         $result = $arrayTurtle;
@@ -142,6 +176,14 @@ class ParserTurtle
         return $result;
     }
 
+    /**
+     * TODO
+     *
+     * @param $arrayTurtle
+     * @param $s
+     * @param $p
+     * @return int|null|string
+     */
     static function getKey($arrayTurtle, $s, $p)
     {
         $result = null;
@@ -153,9 +195,17 @@ class ParserTurtle
                 }
             }
         }
-        return $key;
+        return $result;
     }
 
+    /**
+     * TODO
+     *
+     * @param $arrayTurtle
+     * @param $s
+     * @param $p
+     * @return null
+     */
     static function getTriple($arrayTurtle, $s, $p)
     {
         $result = null;
@@ -167,8 +217,8 @@ class ParserTurtle
                     // \<mailto\:([^\<\>])+\>|\<([^\<\>])+\>|
                     // print_r($triple["o"]);
                     // print_r($matches);
-                    foreach ($matches as $key => $match) {
-                        if ($key != 0 && ! empty($match)) {
+                    foreach ($matches as $keyMatches => $match) {
+                        if ($keyMatches != 0 && ! empty($match)) {
                             $result["value"] = $match;
                             break;
                         }
@@ -180,6 +230,15 @@ class ParserTurtle
         return $result;
     }
 
+    /**
+     * TODO
+     *
+     * @param $rs1
+     * @param $rs2
+     * @param bool $ordered
+     * @param bool $distinct
+     * @return array
+     */
     public static function compare($rs1, $rs2, $ordered = false, $distinct = false)
     {
         $difference = array();
@@ -212,7 +271,7 @@ class ParserTurtle
         $bnodesInRs2 = array();
         $patternBlankNode = '/^_:/';
 
-        // echo "AVANT";
+        // echo "BEFORE";
         // print_r($clone1);
         // print_r($clone2);
         foreach ($clone1WithoutBlanknodes as &$row) {
@@ -236,9 +295,9 @@ class ParserTurtle
         // print_r($clone2WithoutBlanknodes);
         // 1.2 compare
         if ($ordered) {
-            $difference = ToolsBlankNode::array_diff_assoc_recursive($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
+            $difference = ToolsBlankNode::arrayDiffAssocRecursive($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
         } else {
-            $difference = ToolsBlankNode::array_diff_assoc_unordered($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
+            $difference = ToolsBlankNode::arrayDiffAssocUnordered($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
         }
 
         // Check if there are blank nodes
@@ -261,7 +320,7 @@ class ParserTurtle
         $clone1 = $rs1Triples;
         // print_r($clone1);
         // 2.Repeat, for each graph:
-        $arrayPermutationsBnode = ToolsBlankNode::AllPermutations($bnodesInRs2);
+        $arrayPermutationsBnode = ToolsBlankNode::allPermutations($bnodesInRs2);
         // echo "PERMUTATION\n";
         // print_r($arrayPermutationsBnode );
         // exit();
@@ -271,7 +330,7 @@ class ParserTurtle
             foreach ($clone2 as $key => &$row) {
                 $arrayVariableTypeBnode = array_keys($row, "bnode");
                 foreach ($arrayVariableTypeBnode as $variableTypeBnode) {
-                    $variableArray = split(" ", $variableTypeBnode);
+                    $variableArray = explode(" ", $variableTypeBnode);
                     $variable = $variableArray[0];
 
                     $row[$variable] = $bnodesInRs1[array_search($row[$variable], $permute)];
@@ -281,9 +340,9 @@ class ParserTurtle
             // print_r($clone2);
             // $difference = self::sub_array_diff_assoc_unordered( $clone1,$clone2) ;
             if ($ordered) {
-                $difference = ToolsBlankNode::array_diff_assoc_recursive($clone1, $clone2);
+                $difference = ToolsBlankNode::arrayDiffAssocRecursive($clone1, $clone2);
             } else {
-                $difference = ToolsBlankNode::array_diff_assoc_unordered($clone1, $clone2);
+                $difference = ToolsBlankNode::arrayDiffAssocUnordered($clone1, $clone2);
             }
             if (count($difference) == 0) {
                 return $difference; // true
@@ -313,12 +372,12 @@ class ParserTurtle
      * //return equivalent(convert(rs1), convert(rs2), new BNodeIso(NodeUtils.sameValue)) ;
      * $clone1 = $rs1Triples;
      * $clone2 = $rs2Triples;
-     * // echo "AVANT";
+     * // echo "AFTER";
      * // print_r($clone1);
      * // print_r($clone2);
      * foreach ($rs1Triples as $key1=>&$value1) {
-     * $tmpclone2 = $clone2;
-     * foreach ($tmpclone2 as $key2=>&$value2) {
+     * $tmpClone2 = $clone2;
+     * foreach ($tmpClone2 as $key2=>&$value2) {
      *
      * // echo "-------------";
      * // print_r($value1);
@@ -330,7 +389,7 @@ class ParserTurtle
      * break;
      * }
      * }
-     * // echo "-------------APRES";
+     * // echo "-------------AFTER";
      * // print_r($clone1);
      * // print_r($clone2);
      * }

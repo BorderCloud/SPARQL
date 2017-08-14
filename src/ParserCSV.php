@@ -1,4 +1,5 @@
- <?php
+<?php
+declare(strict_types=1);
 /**
  * @git git@github.com:BorderCloud/SPARQL.git
  * @author Karima Rafes <karima.rafes@bordercloud.com>
@@ -6,10 +7,25 @@
  */
 namespace BorderCloud\SPARQL;
 
+/**
+ * Class ParserCSV
+ * TODO
+ *
+ * @package BorderCloud\SPARQL
+ */
 class ParserCSV
 {
-
-    public function csv_to_array($csv, $delimiter = ',', $enclosure = '\'', $escape = '\\', $terminator = "\n")
+    /**
+     * TODO
+     *
+     * @param $csv
+     * @param string $delimiter
+     * @param string $enclosure
+     * @param string $escape
+     * @param string $terminator
+     * @return array
+     */
+    public function csvToArray($csv, $delimiter = ',', $enclosure = '\'', $escape = '\\', $terminator = "\n")
     {
         $r = array();
         // $string = utf8_encode($csv);
@@ -48,6 +64,13 @@ class ParserCSV
         return $r;
     }
 
+    /**
+     * TODO
+     *
+     * @param $row1
+     * @param $row2
+     * @return int
+     */
     public function mySortAllColumn($row1, $row2)
     {
         $result = 0;
@@ -81,6 +104,12 @@ class ParserCSV
         return $result;
     }
 
+    /**
+     * TODO
+     *
+     * @param $array
+     * @return mixed
+     */
     function sortTable($array)
     {
         $result = $array;
@@ -88,6 +117,15 @@ class ParserCSV
         return $result;
     }
 
+    /**
+     * TODO
+     *
+     * @param $rs1
+     * @param $rs2
+     * @param bool $ordered
+     * @param bool $distinct
+     * @return array
+     */
     public static function compare($rs1, $rs2, $ordered = false, $distinct = false)
     {
         $difference = array();
@@ -95,8 +133,8 @@ class ParserCSV
         if (count($rs1) == 0 && count($rs2) == 0) {
             return $difference; // return true ;
         } elseif (count($rs1[0]) != count($rs2[0])) {
-            $difference[1] = "Nb columns :" . count($rows1);
-            $difference[2] = "Nb columns :" . count($rows2);
+            $difference[1] = "Nb columns :" . count($rs1);
+            $difference[2] = "Nb columns :" . count($rs2);
             return $difference; // return false ;
         }
 
@@ -119,7 +157,7 @@ class ParserCSV
         $bnodesInRs2 = array();
         $patternBlankNode = '/^_:/';
 
-        // echo "AVANT";
+        // echo "BEFORE";
         // print_r($clone1);
         // print_r($clone2);
         foreach ($clone1WithoutBlanknodes as &$row) {
@@ -144,9 +182,9 @@ class ParserCSV
         // exit();
         // 1.2 compare
         if ($ordered) {
-            $difference = ToolsBlankNode::array_diff_assoc_recursive($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
+            $difference = ToolsBlankNode::arrayDiffAssocRecursive($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
         } else {
-            $difference = ToolsBlankNode::array_diff_assoc_unordered($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
+            $difference = ToolsBlankNode::arrayDiffAssocUnordered($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
         }
 
         // Check if there are blank nodes
@@ -167,11 +205,8 @@ class ParserCSV
         // print_r($bnodesInRs1);
         // print_r($bnodesInRs2);
 
-        $clone1 = $rs1;
-        // print_r($clone1);
-
         // 2.Repeat, for each graph:
-        $arrayPermutationsBnode = ToolsBlankNode::AllPermutations($bnodesInRs2);
+        $arrayPermutationsBnode = ToolsBlankNode::allPermutations($bnodesInRs2);
         // echo "PERMUTATION\n";
         // print_r($arrayPermutationsBnode );
         // exit();
@@ -181,19 +216,17 @@ class ParserCSV
             foreach ($clone2 as $key => &$row) {
                 $arrayVariableTypeBnode = array_keys($row, "bnode");
                 foreach ($arrayVariableTypeBnode as $variableTypeBnode) {
-                    $variableArray = split(" ", $variableTypeBnode);
+                    $variableArray = explode(" ", $variableTypeBnode);
                     $variable = $variableArray[0];
 
                     $row[$variable] = $bnodesInRs1[array_search($row[$variable], $permute)];
                 }
             }
 
-            // print_r($clone2);
-
             if ($ordered) {
-                $difference = ToolsBlankNode::array_diff_assoc_recursive($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
+                $difference = ToolsBlankNode::arrayDiffAssocRecursive($clone1WithoutBlanknodes,$clone2WithoutBlanknodes);
             } else {
-                $difference = ToolsBlankNode::array_diff_assoc_unordered($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
+                $difference = ToolsBlankNode::arrayDiffAssocUnordered($clone1WithoutBlanknodes, $clone2WithoutBlanknodes);
             }
             if (count($difference) == 0) {
                 return $difference; // true

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php" colors="true">
+    <!--Example <php>-->
+        <!--<var name="db_dsn" value="mysql:dbname=hello_world_test;host=localhost"/>-->
+        <!--<var name="db_username" value="root"/>-->
+        <!--<var name="db_password" value=""/>-->
+    <!--</php>-->
+
+    <testsuites>
+        <testsuite name="SPARQL Test Suite">
+            <!--directory>./tests/</directory-->
+
+            <file>./tests/SparqlClientTest.php</file>
+            <!--<file>./tests/virtuosoTest.php</file>-->
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>./</directory>
+            <exclude>
+                <directory>./tests</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>
