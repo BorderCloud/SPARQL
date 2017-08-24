@@ -205,8 +205,8 @@ foreach ($rows["result"]["rows"] as $row) {
 
 ###  Documentation API
 
-        * [SparqlClient](doc/BorderCloud-SPARQL-SparqlClient.md)
-        * [API](doc/ApiIndex.md)
+* [SparqlClient](doc/BorderCloud-SPARQL-SparqlClient.md)
+* [API](doc/ApiIndex.md)
 
 ### Copy Sources and tests
 
