@@ -8,7 +8,7 @@
 	],
 	"homepage" : "https://github.com/BorderCloud/SPARQL",
 	"license" : "CC-BY-SA-4.0",
-	"version" : "2.0.0@dev",
+	"version" : "2.0.1@dev",
 	"authors" : [{
 			"name" : "Karima Rafes",
 			"email" : "karima.rafes@bordercloud.com",
@@ -17,7 +17,7 @@
 		}
 	],
 	"require" : {
-		"php" : ">=5.3"
+		"php" : ">=5.2"
 	},
 	"repositories" : [{
 			"type" : "vcs",

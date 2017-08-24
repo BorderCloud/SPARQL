@@ -122,6 +122,12 @@ final class SparqlClientTest extends TestCase
 
         $sc->setNameParameterQueryWrite("paramWrite");
         $this->assertEquals($sc->getNameParameterQueryWrite(),"paramWrite");
+
+        $sc->setProxyHost("http://example.com");
+        $this->assertEquals($sc->getProxyHost(),"http://example.com");
+
+        $sc->setProxyPort(1234);
+        $this->assertEquals($sc->getProxyPort(),1234);
     }
 
     public function testError()

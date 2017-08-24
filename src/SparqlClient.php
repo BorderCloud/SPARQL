@@ -25,22 +25,22 @@ namespace BorderCloud\SPARQL;
  * $rows = $sp_readonly->query($q, 'rows');
  * $err = $sp_readonly->getErrors();
  * if ($err) {
- * print_r($err);
- * throw new Exception(print_r($err,true));
+ *      print_r($err);
+ *      throw new Exception(print_r($err,true));
  * }
  *
  * foreach($rows["result"]["variables"] as $variable){
- * printf("%-20.20s",$variable);
- * echo '|';
+ *      printf("%-20.20s",$variable);
+ *      echo '|';
  * }
  * echo "\n";
  *
  * foreach ($rows["result"]["rows"] as $row){
- * foreach($rows["result"]["variables"] as $variable){
- * printf("%-20.20s",$row[$variable]);
- * echo '|';
- * }
- * echo "\n";
+ *      foreach($rows["result"]["variables"] as $variable){
+ *          printf("%-20.20s",$row[$variable]);
+ *          echo '|';
+ *      }
+ *      echo "\n";
  * }
  * ?>
  * ```
@@ -87,8 +87,8 @@ namespace BorderCloud\SPARQL;
  * $res = $sc_readonly->query($q);
  * $err = $sc_readonly->getErrors();
  * if ($err) {
- * print_r($err);
- * throw new Exception(print_r($err,true));
+ *      print_r($err);
+ *      throw new Exception(print_r($err,true));
  * }
  * var_dump($res);
  * ?>
@@ -115,8 +115,8 @@ namespace BorderCloud\SPARQL;
  * $res = $sp_write->query($q,'raw');
  * $err = $sp_write->getErrors();
  * if ($err) {
- * print_r($err);
- * throw new Exception(print_r($err,true));
+ *      print_r($err);
+ *      throw new Exception(print_r($err,true));
  * }
  * var_dump($res);
  * ```
@@ -137,8 +137,8 @@ namespace BorderCloud\SPARQL;
  * $res = $sp_write->query($q,'raw');
  * $err = $sp_write->getErrors();
  * if ($err) {
- * print_r($err);
- * throw new Exception(print_r($err,true));
+ *      print_r($err);
+ *      throw new Exception(print_r($err,true));
  * }
  * var_dump($res);
  *
@@ -269,6 +269,38 @@ final class SparqlClient extends Base
         $this->_parserSparqlResult = new ParserSparqlResult();
 
         $this->_lastError = "";
+    }
+
+    /**
+     * @return string
+     */
+    public function getProxyHost(): string
+    {
+        return $this->_proxyHost;
+    }
+
+    /**
+     * @param string $proxyHost
+     */
+    public function setProxyHost(string $proxyHost)
+    {
+        $this->_proxyHost = $proxyHost;
+    }
+
+    /**
+     * @return int
+     */
+    public function getProxyPort(): int
+    {
+        return $this->_proxyPort;
+    }
+
+    /**
+     * @param int $proxyPort
+     */
+    public function setProxyPort(int $proxyPort)
+    {
+        $this->_proxyPort = $proxyPort;
     }
 
     /**
@@ -776,4 +808,5 @@ final class SparqlClient extends Base
         }
         return $objCurl;
     }
+
 }
