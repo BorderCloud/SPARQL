@@ -17,7 +17,7 @@ namespace BorderCloud\SPARQL;
  * ```php
  * <?php
  *
- * use BorderCloud\SPARQL\Endpoint;
+ * use BorderCloud\SPARQL\SparqlClient;
  *
  * $endpoint ="http://dbpedia.org/";
  * $sp_readonly = new SparqlClient($endpoint);

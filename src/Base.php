@@ -53,7 +53,7 @@ class Base
             $this->_errors[] = $error;
         }
         if (count($this->_errors) > $this->_maxErrors) {
-            die('Too many errors (limit: ' . $this->_maxErrors . '): ' . print_r($this->_errors, 1));
+            die('Too many errors (limit: ' . $this->_maxErrors . '): ' . print_r($this->_errors, true));
         }
         return true;
     }

@@ -251,3 +251,13 @@ work. If not, see <http://creativecommons.org/licenses/by-sa/4.0/>.
 php vendor/phpdocumentor/phpdocumentor/bin/phpdoc --directory=src --template="xml"
 vendor/evert/phpdoc-md/bin/phpdocmd ./output/structure.xml doc
 ```
+
+### Git...
+```sh
+git pull
+git push
+git tag -a 2.0.1@dev -m "version dev"
+git push --tags
+```
+
+
