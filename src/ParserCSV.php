@@ -25,7 +25,7 @@ class ParserCSV
      * @param string $terminator
      * @return array
      */
-    public function csvToArray($csv, $delimiter = ',', $enclosure = '\'', $escape = '\\', $terminator = "\n")
+    public static function csvToArray($csv, $delimiter = ',', $enclosure = '\'', $escape = '\\', $terminator = "\n")
     {
         $r = array();
         // $string = utf8_encode($csv);
@@ -71,7 +71,7 @@ class ParserCSV
      * @param $row2
      * @return int
      */
-    public function mySortAllColumn($row1, $row2)
+    public static function mySortAllColumn($row1, $row2)
     {
         $result = 0;
         $countTab = 0;
