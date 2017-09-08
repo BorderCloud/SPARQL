@@ -162,7 +162,7 @@ class ParserCSV
         // print_r($clone2);
         foreach ($clone1WithoutBlanknodes as &$row) {
             foreach ($row as $key => &$value) {
-                if (preg_match($patternBlankNode, $value)) {
+                if (is_string($value) &&  preg_match($patternBlankNode, $value)) {
                     $bnodesInRs1[] = $value;
                     $value = "BLANKNODE"; // remove
                 }
@@ -170,7 +170,7 @@ class ParserCSV
         }
         foreach ($clone2WithoutBlanknodes as &$row) {
             foreach ($row as $key => &$value) {
-                if (preg_match($patternBlankNode, $value)) {
+                if (is_string($value) && preg_match($patternBlankNode, $value)) {
                     $bnodesInRs2[] = $value;
                     $value = "BLANKNODE"; // remove
                 }
