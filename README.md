@@ -252,6 +252,14 @@ php vendor/phpdocumentor/phpdocumentor/bin/phpdoc --directory=src --template="xm
 vendor/evert/phpdoc-md/bin/phpdocmd ./output/structure.xml doc
 ```
 
+### Start Docker for PHPUnit
+Before to execute tests, you need to start database's instances.
+```sh
+systemctl start docker
+docker pull bordercloud/tft-virtuoso7-stable
+docker run --privileged --name instance.tft_virtuoso7_stable -h tft_virtuoso7_stable -d bordercloud/tft-virtuoso7-stable
+```
+
 ### Git...
 ```sh
 git pull
