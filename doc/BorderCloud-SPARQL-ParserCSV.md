@@ -29,6 +29,7 @@ TODO
 
 
 * Visibility: **public**
+* This method is **static**.
 
 
 #### Arguments
@@ -49,6 +50,7 @@ TODO
 
 
 * Visibility: **public**
+* This method is **static**.
 
 
 #### Arguments

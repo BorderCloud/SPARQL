@@ -18,22 +18,22 @@ $q = "select * where {?x ?y ?z.} LIMIT 5";
 $rows = $sp_readonly->query($q, 'rows');
 $err = $sp_readonly->getErrors();
 if ($err) {
-print_r($err);
-throw new Exception(print_r($err,true));
+     print_r($err);
+     throw new Exception(print_r($err,true));
 }
 
 foreach($rows["result"]["variables"] as $variable){
-printf("%-20.20s",$variable);
-echo '|';
+     printf("%-20.20s",$variable);
+     echo '|';
 }
 echo "\n";
 
 foreach ($rows["result"]["rows"] as $row){
-foreach($rows["result"]["variables"] as $variable){
-printf("%-20.20s",$row[$variable]);
-echo '|';
-}
-echo "\n";
+     foreach($rows["result"]["variables"] as $variable){
+         printf("%-20.20s",$row[$variable]);
+         echo '|';
+     }
+     echo "\n";
 }
 ?>
 ```
@@ -80,8 +80,8 @@ ask where { GRAPH <".$graph."> {a:A b:Name \"Test3\" .}} ";
 $res = $sc_readonly->query($q);
 $err = $sc_readonly->getErrors();
 if ($err) {
-print_r($err);
-throw new Exception(print_r($err,true));
+     print_r($err);
+     throw new Exception(print_r($err,true));
 }
 var_dump($res);
 ?>
@@ -108,8 +108,8 @@ a:A b:Name \"Test3\" .
 $res = $sp_write->query($q,'raw');
 $err = $sp_write->getErrors();
 if ($err) {
-print_r($err);
-throw new Exception(print_r($err,true));
+     print_r($err);
+     throw new Exception(print_r($err,true));
 }
 var_dump($res);
 ```
@@ -130,8 +130,8 @@ a:A b:Name \"Test2\" .
 $res = $sp_write->query($q,'raw');
 $err = $sp_write->getErrors();
 if ($err) {
-print_r($err);
-throw new Exception(print_r($err,true));
+     print_r($err);
+     throw new Exception(print_r($err,true));
 }
 var_dump($res);
 
@@ -331,6 +331,64 @@ Base constructor.
 * Visibility: **public**
 * This method is defined by [BorderCloud\SPARQL\Base](BorderCloud-SPARQL-Base.md)
 
+
+
+
+### getProxyHost
+
+    string BorderCloud\SPARQL\SparqlClient::getProxyHost()
+
+
+
+
+
+* Visibility: **public**
+
+
+
+
+### setProxyHost
+
+    mixed BorderCloud\SPARQL\SparqlClient::setProxyHost(string $proxyHost)
+
+
+
+
+
+* Visibility: **public**
+
+
+#### Arguments
+* $proxyHost **string**
+
+
+
+### getProxyPort
+
+    integer BorderCloud\SPARQL\SparqlClient::getProxyPort()
+
+
+
+
+
+* Visibility: **public**
+
+
+
+
+### setProxyPort
+
+    mixed BorderCloud\SPARQL\SparqlClient::setProxyPort(integer $proxyPort)
+
+
+
+
+
+* Visibility: **public**
+
+
+#### Arguments
+* $proxyPort **integer**
 
 
 
