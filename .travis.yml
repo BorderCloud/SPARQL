@@ -20,6 +20,9 @@ php:
   # aliased to a recent hhvm version
   - hhvm
 
+services:
+  - docker
+
 # optionally specify a list of environments, for example to test different RDBMS
 env:
 #  - DB=mysql
@@ -37,6 +40,9 @@ matrix:
     - php: 5.6
     - php: hhvm
 
+before_install:
+  - docker pull bordercloud/tft-virtuoso7-stable
+
 # execute any number of scripts before the test run, custom env's are available as variables
 before_script: composer install
 #  - if [[ "$DB" == "pgsql" ]]; then psql -c "DROP DATABASE IF EXISTS hello_world_test;" -U postgres; fi
@@ -45,7 +51,9 @@ before_script: composer install
 
 # omitting "script:" will default to phpunit
 # use the $DB env variable to determine the phpunit.xml to use
-script: phpunit --configuration phpunit.xml --coverage-text
+script:
+  -   docker run --privileged --name instance.tft_virtuoso7_stable -h tft_virtuoso7_stable -d bordercloud/tft-virtuoso7-stable #http://172.17.0.2:8890/sparql/
+  -   phpunit --configuration phpunit.xml --coverage-text
 
 # configure notifications (email, IRC, campfire etc)
 #notifications:

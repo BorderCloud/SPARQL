@@ -21,7 +21,7 @@ final class virtuosoTest extends TestCase
      * @var SparqlClient
      */
     private $_client;
-    private $_endpoint = "http://database-test:8890/sparql-auth/";
+    private $_endpoint = "http://172.17.0.2:8890/sparql-auth/";
     private $_login = "dba";
     private $_password = "dba";
 

@@ -11,7 +11,7 @@
             <!--directory>./tests/</directory-->
 
             <file>./tests/SparqlClientTest.php</file>
-            <!--<file>./tests/virtuosoTest.php</file>-->
+            <file>./tests/virtuosoTest.php</file>
         </testsuite>
     </testsuites>
 
