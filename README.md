@@ -222,7 +222,7 @@ karima.rafes@bordercloud.com
 
 ### Release-Notes
 
-* V2.0.0@DEV
+* V2.0.5
 ** Compatibility : PHP 7.1 and psr-4
 ** Rename the class Endpoint to SparqlClient and simplify the constructor. You can set the endpoints  only by their setters.
 ** Rename several functions (PHP Lint)
