@@ -222,6 +222,9 @@ karima.rafes@bordercloud.com
 
 ### Release-Notes
 
+* V2.0.6
+** Fix : bug with the parser and the ASK query's results
+
 * V2.0.5
 ** Compatibility : PHP 7.1 and psr-4
 ** Rename the class Endpoint to SparqlClient and simplify the constructor. You can set the endpoints  only by their setters.
@@ -237,7 +240,7 @@ karima.rafes@bordercloud.com
 
 ### license
 
-SPARQL.Pro lib PHP (c)2014 by Karima Rafes - BorderCloud
+SPARQL.Pro lib PHP (c)2018 by Karima Rafes - BorderCloud
 
 SPARQL.Pro lib PHP is licensed under a
 Creative Commons Attribution-ShareAlike 4.0 International License.
