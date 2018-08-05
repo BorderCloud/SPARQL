@@ -10,6 +10,7 @@
         <testsuite name="SPARQL Test Suite">
             <!--directory>./tests/</directory-->
 
+            <file>./tests/ParserSparqlResultTest.php</file>
             <file>./tests/SparqlClientTest.php</file>
             <file>./tests/virtuosoTest.php</file>
         </testsuite>

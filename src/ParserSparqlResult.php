@@ -103,6 +103,7 @@ class ParserSparqlResult extends Base
                 $this->_result['result']['rows'][$this->_rowCurrent][$this->_cellCurrent . " datatype"] = $attribute['datatype'];
             }
         } else if ($elementname == "boolean") {
+            $this->_value = "";
             $this->_cellCurrent = "boolean" ;
         }
     }
@@ -151,6 +152,9 @@ class ParserSparqlResult extends Base
             $this->_value = "";
         }else if ($elementname == "boolean") {
             $this->_result['boolean']= $this->_value == "true" ? true : false;
+            unset($this->_result['result']);
+            $this->_cellCurrent = null;
+            $this->_value = "";
         }
     }
 
@@ -163,7 +167,7 @@ class ParserSparqlResult extends Base
     public function contentHandler($parserObject, $data)
     {
         if ($this->_cellCurrent != null) {
-            // echo "DATA". $data." - ".$this->_cellCurrent."\n";
+            //echo "DATA". $data." - ".$this->_cellCurrent."\n";
             $this->_value .= $data;
         }
     }
@@ -234,6 +238,18 @@ class ParserSparqlResult extends Base
     public static function compare($rs1, $rs2, $ordered = false, $distinct = false)
     {
         $difference = array();
+
+        // Check ASK response
+        if ( isset($rs1['boolean']) &&  isset($rs2['boolean'])) {
+            if ($rs1['boolean'] === $rs2['boolean']) {
+                return $difference; // return true ;
+            } else {
+                $difference[1] = $rs1;
+                $difference[2] =  $rs2;
+                return $difference; // return false ;
+            }
+        }
+
         // A/ Check the variables lists in the header are the same.
         if (! isset($rs1['result']['variables']) && ! isset($rs2['result']['variables'])) {
             return $difference; // return true ;
