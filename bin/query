@@ -2,10 +2,11 @@
 <?php
 declare(strict_types=1);
 
+require __DIR__.'/../vendor/autoload.php';
+
 use BorderCloud\SPARQL\Curl;
 use BorderCloud\SPARQL\SparqlClient;
 
-require_once 'SparqlClient.php';
 // require_once 'Test.php';
 
 // List of servers available that you can test with this script
@@ -32,7 +33,7 @@ USAGE : query [-r|-w][-e URL|--endpointQueryAndUpdate=URL]
                                         the request http to write.
                                         (by default : update)
     -f,--file=File                      File of the query.
-    -t, --typeOutput=TYPE               Type of response: table,txt,csv,tsv,ttl,srx,srj
+    -t, --typeOutput=TYPE               Type of response: table,txt,csv,tsv,ttl,srx,srj,empty
                                         (by default : table)
 
     -l, --login=LOGIN                  Server login
@@ -42,40 +43,40 @@ USAGE : query [-r|-w][-e URL|--endpointQueryAndUpdate=URL]
     -d, --debug                         Mode debug
 
 EXAMPLE : Virtuoso
-./query -w -e http://localhost/tests/ -f ./example/queryWrite1.rq
+./bin/query -w -e http://localhost/tests/ -f ./example/queryWrite1.rq
 
-./query -r -e http://localhost/tests/ -f ./example/queryRead1.rq
+./bin/query -r -e http://localhost/tests/ -f ./example/queryRead1.rq
 
 EXAMPLE : 4Store
-./query -w -e http://localhost/ -f ./example/queryWrite1.rq
+./bin/query -w -e http://localhost/ -f ./example/queryWrite1.rq
 
-./query -r -e http://localhost/ -f ./example/queryRead1.rq
+./bin/query -r -e http://localhost/ -f ./example/queryRead1.rq
 
 EXAMPLE : Sesame
-./query -w -q http://localhost/openrdf-sesame/repositories/tests \
+./bin/query -w -q http://localhost/openrdf-sesame/repositories/tests \
  -u http://localhost/openrdf-sesame/repositories/tests/statements \
 -f ./example/queryWrite1.rq
 
-./query -r -q http://localhost/openrdf-sesame/repositories/tests \
+./bin/query -r -q http://localhost/openrdf-sesame/repositories/tests \
  -u http://localhost/openrdf-sesame/repositories/tests/statements \
 -f ./example/queryRead1.rq
 
 EXAMPLE : Fuseki
-./query -w -q http://localhost/tests/query \
+./bin/query -w -q http://localhost/tests/query \
 -u http://localhost/tests/update \
 -f ./example/queryWrite1.rq
 
-./query -r -q http://localhost/tests/query \
+./bin/query -r -q http://localhost/tests/query \
 -u http://localhost/tests/update \
 -f ./example/queryRead1.rq
 
 EXAMPLE : Allegrograph
-./query -w -q http://localhost/repositories/tests \
+./bin/query -w -q http://localhost/repositories/tests \
 -u http://localhost/repositories/tests \
 --nameParameterUpdate=query \
 -f ./example/queryWrite1.rq
 
-./query -r -q http://localhost/repositories/tests \
+./bin/query -r -q http://localhost/repositories/tests \
 -u http://localhost/repositories/tests \
 --nameParameterUpdate=query \
 -f ./example/queryRead1.rq
