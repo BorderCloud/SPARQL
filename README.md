@@ -222,6 +222,9 @@ karima.rafes@bordercloud.com
 
 ### Release-Notes
 
+* V2.0.7
+** Fix : Insert the parameter User-agent in the header HTTP (for Wikidata)
+
 * V2.0.6
 ** Fix : bug with the parser and the ASK query's results
 

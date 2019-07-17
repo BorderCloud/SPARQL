@@ -49,6 +49,8 @@ class Curl
         curl_setopt($this->_curlHandler, CURLOPT_FOLLOWLOCATION, true);
 
         curl_setopt($this->_curlHandler, CURLOPT_SSL_VERIFYPEER, 0);
+
+        curl_setopt($this->_curlHandler, CURLOPT_USERAGENT,'bordercloud/sparql 2.0');
     }
 
     /**
