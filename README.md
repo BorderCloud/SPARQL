@@ -222,6 +222,9 @@ karima.rafes@bordercloud.com
 
 ### Release-Notes
 
+* V2.0.9
+** Fix : bugs in SPARQL client
+
 * V2.0.8
 ** Fix : bugs when there are error messages of SPARQL services 
 

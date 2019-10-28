@@ -575,12 +575,14 @@ final class SparqlClient extends Base
                     }else{
                         $returnResult =  $result;
                     }
+                    break;
                 case "raw":
                     if(isset($result["result"]["variables"][0]) && isset($result["result"]["rows"][0][$result["result"]["variables"][0]])) {
                         $returnResult =  $result["result"]["rows"][0][$result["result"]["variables"][0]];
                     }else{
-                        $returnResult =  $result;
+                        $returnResult =  "";
                     }
+                    break;
                 case "json":
                 default: // rows
                 $returnResult =  $result;
