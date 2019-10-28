@@ -223,7 +223,7 @@ karima.rafes@bordercloud.com
 ### Release-Notes
 
 * V2.0.8
-** Fix : Fix bugs when there are error messages of SPARQL services 
+** Fix : bugs when there are error messages of SPARQL services 
 
 * V2.0.7
 ** Fix : Insert the parameter User-agent in the header HTTP (for Wikidata)
@@ -270,6 +270,8 @@ docker run --privileged --name instance.tft_virtuoso7_stable -h tft_virtuoso7_st
 ```
 
 ### Git...
+Modify also the version in composer.json
+
 ```sh
 git pull
 git push
