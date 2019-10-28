@@ -529,10 +529,16 @@ final class SparqlClient extends Base
     {
         $t1 = SparqlClient::mtime();
         $result = null;
+        $returnResult = null;
+
         switch ($result_format) {
             case "json":
                 $response = $this->queryRead($q, "application/sparql-results+json");
-                $result = json_decode($response);
+                if (! empty($response)) {
+                    $result = json_decode($response);
+                } else {
+                    $result = array();
+                }
                 break;
             case "row":
             case "raw":
@@ -558,19 +564,29 @@ final class SparqlClient extends Base
                 }
         }
         $result['query_time'] = SparqlClient::mtime() - $t1;
+
         if(array_key_exists('boolean',$result)) { // ASK query
-            return $result["boolean"];
+            $returnResult = $result["boolean"];
         }else{ // other
             switch ($result_format) {
                 case "row":
-                    return $result["result"]["rows"][0];
+                    if(isset($result["result"]["rows"][0])) {
+                        $returnResult =  $result["result"]["rows"][0];
+                    }else{
+                        $returnResult =  $result;
+                    }
                 case "raw":
-                     return $result["result"]["rows"][0][$result["result"]["variables"][0]];
+                    if(isset($result["result"]["variables"][0]) && isset($result["result"]["rows"][0][$result["result"]["variables"][0]])) {
+                        $returnResult =  $result["result"]["rows"][0][$result["result"]["variables"][0]];
+                    }else{
+                        $returnResult =  $result;
+                    }
                 case "json":
                 default: // rows
-                    return $result;
+                $returnResult =  $result;
             }
         }
+        return $returnResult;
     }
 
     /**

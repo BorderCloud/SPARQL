@@ -138,7 +138,7 @@ final class SparqlClientTest extends TestCase
         $sc->setEndpointRead($endpoint);
         //error in the query
         $q = "s *  where {?x ?y ?z.} LIMIT 5";
-        $rows = $sc->query($q, 'rows');
+        $rows = $sc->query($q);
         $err = $sc->getErrors();
         $isError = false;
         $errorMessage = "";
@@ -159,6 +159,60 @@ final class SparqlClientTest extends TestCase
         $rows = $sc->query($q, 'rows');
         $err = $sc->getErrors();
         $isError = false;
+        if ($err) {
+            $isError = true;
+            //print_r($err);
+            //throw new Exception(print_r($err, true));
+            $errorMessage =  $sc->getLastError();
+        }
+        $this->assertTrue($isError);
+        $this->assertEquals($errorMessage,"Lexical error at line 1, column 2.  Encountered: \" \" (32), after : \"s\"");
+
+        $endpoint = "https://query.wikidata.org/sparql";
+        $sc = new SparqlClient();
+        $sc->setEndpointRead($endpoint);
+        //error in the query
+        $q = "s count(*)  where {?x ?y ?z.} LIMIT 5";
+        $rows = $sc->query($q, 'row');
+        $err = $sc->getErrors();
+        $isError = false;
+        $errorMessage = "";
+        if ($err) {
+            $isError = true;
+            //print_r($err);
+            //throw new Exception(print_r($err, true));
+            $errorMessage =  $sc->getLastError();
+        }
+        $this->assertTrue($isError);
+        $this->assertEquals($errorMessage,"Lexical error at line 1, column 2.  Encountered: \" \" (32), after : \"s\"");
+
+        $endpoint = "https://query.wikidata.org/sparql";
+        $sc = new SparqlClient();
+        $sc->setEndpointRead($endpoint);
+        //error in the query
+        $q = "s count(*)  where {?x ?y ?z.} LIMIT 5";
+        $rows = $sc->query($q, 'rows');
+        $err = $sc->getErrors();
+        $isError = false;
+        $errorMessage = "";
+        if ($err) {
+            $isError = true;
+            //print_r($err);
+            //throw new Exception(print_r($err, true));
+            $errorMessage =  $sc->getLastError();
+        }
+        $this->assertTrue($isError);
+        $this->assertEquals($errorMessage,"Lexical error at line 1, column 2.  Encountered: \" \" (32), after : \"s\"");
+
+        $endpoint = "https://query.wikidata.org/sparql";
+        $sc = new SparqlClient();
+        $sc->setEndpointRead($endpoint);
+        //error in the query
+        $q = "s count(*)  where {?x ?y ?z.} LIMIT 5";
+        $rows = $sc->query($q, 'json');
+        $err = $sc->getErrors();
+        $isError = false;
+        $errorMessage = "";
         if ($err) {
             $isError = true;
             //print_r($err);
