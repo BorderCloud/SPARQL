@@ -222,6 +222,9 @@ karima.rafes@bordercloud.com
 
 ### Release-Notes
 
+* V2.0.8
+** Fix : Fix bugs when there are error messages of SPARQL services 
+
 * V2.0.7
 ** Fix : Insert the parameter User-agent in the header HTTP (for Wikidata)
 
@@ -243,7 +246,7 @@ karima.rafes@bordercloud.com
 
 ### license
 
-SPARQL.Pro lib PHP (c)2018 by Karima Rafes - BorderCloud
+SPARQL.Pro lib PHP (c)2019 by Karima Rafes - BorderCloud
 
 SPARQL.Pro lib PHP is licensed under a
 Creative Commons Attribution-ShareAlike 4.0 International License.
@@ -270,7 +273,7 @@ docker run --privileged --name instance.tft_virtuoso7_stable -h tft_virtuoso7_st
 ```sh
 git pull
 git push
-git tag -a 2.0.1@dev -m "version dev"
+git tag -a 2.0.8@dev -m "version dev"
 git push --tags
 ```
 
