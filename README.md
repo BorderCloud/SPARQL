@@ -23,7 +23,7 @@ composer install
 
 You can test your first query sparql with DBPEDIA via a command line :
 ```sh
-./query -r -e http://dbpedia.org/sparql -f ./example/queryReadDBpedia.rq
+./bin/query -r -e http://dbpedia.org/sparql -f ./example/queryReadDBpedia.rq
 ```
 
 And the doc of this script with virtuoso, 4store, Allegrograph, Fuseki and Sesame :
