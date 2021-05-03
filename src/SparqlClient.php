@@ -544,7 +544,7 @@ final class SparqlClient extends Base
             case "raw":
             default: // rows
                 $response = "";
-                if (preg_match("/\s(INSERT|DELETE|CLEAR|LOAD)\s/i", $q)) {
+                if (preg_match("/(INSERT|DELETE|CLEAR|LOAD)\s/i", $q)) {
                     $response = $this->queryUpdate($q);
                 } else {
                     $response = $this->queryRead($q);
