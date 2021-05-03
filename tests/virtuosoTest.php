@@ -25,7 +25,7 @@ final class virtuosoTest extends TestCase
     private $_login = "dba";
     private $_password = "dba";
 
-    public function setUp()
+    public function setUp():void
     {
         $this->_client = new SparqlClient(false);
         $this->_client->setEndpointRead($this->_endpoint);
