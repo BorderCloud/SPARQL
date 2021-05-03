@@ -210,9 +210,21 @@ foreach ($rows["result"]["rows"] as $row) {
 
 ### Copy Sources and tests
 
-TODO !!
 ```sh
 git clone http://github.com/BorderCloud/SPARQL.git
+composer install
+```
+
+Before to execute tests, you need to start database's instances. For example, Virtuoso 7
+```sh
+systemctl start docker
+docker pull bordercloud/tft-virtuoso7-stable
+docker run --privileged --name instance.tft_virtuoso7_stable -h tft_virtuoso7_stable -d bordercloud/tft-virtuoso7-stable
+```
+
+Execute PHPUnit
+```sh
+phpunit --configuration phpunit.xml --coverage-text
 ```
 
 ### Contact
@@ -226,7 +238,7 @@ karima.rafes@bordercloud.com
 ** Fix : bugs in SPARQL client
 
 * V2.0.8
-** Fix : bugs when there are error messages of SPARQL services 
+** Fix : bugs when there are error messages of SPARQL services
 
 * V2.0.7
 ** Fix : Insert the parameter User-agent in the header HTTP (for Wikidata)
@@ -262,14 +274,6 @@ work. If not, see <http://creativecommons.org/licenses/by-sa/4.0/>.
 ```sh
 php vendor/phpdocumentor/phpdocumentor/bin/phpdoc --directory=src --template="xml"
 vendor/evert/phpdoc-md/bin/phpdocmd ./output/structure.xml doc
-```
-
-### Start Docker for PHPUnit
-Before to execute tests, you need to start database's instances.
-```sh
-systemctl start docker
-docker pull bordercloud/tft-virtuoso7-stable
-docker run --privileged --name instance.tft_virtuoso7_stable -h tft_virtuoso7_stable -d bordercloud/tft-virtuoso7-stable
 ```
 
 ### Git...
