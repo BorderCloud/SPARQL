@@ -1,11 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: karima
- * Date: 13/08/17
- * Time: 14:19
- */
+
 namespace BorderCloud\SPARQL\Tests;
 
 $loader = require __DIR__ . '/../vendor/autoload.php';
@@ -25,7 +20,7 @@ final class virtuosoTest extends TestCase
     private $_login = "dba";
     private $_password = "dba";
 
-    public function setUp():void
+    public function setUp()
     {
         $this->_client = new SparqlClient(false);
         $this->_client->setEndpointRead($this->_endpoint);

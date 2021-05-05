@@ -11,6 +11,7 @@
             <!--directory>./tests/</directory-->
 
             <file>./tests/ParserSparqlResultTest.php</file>
+            <file>./tests/ParserSparqlTest.php</file>
             <file>./tests/SparqlClientTest.php</file>
             <file>./tests/virtuosoTest.php</file>
         </testsuite>

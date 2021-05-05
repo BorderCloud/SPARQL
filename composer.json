@@ -8,7 +8,7 @@
 	],
 	"homepage" : "https://github.com/BorderCloud/SPARQL",
 	"license" : "CC-BY-SA-4.0",
-	"version" : "2.0.9",
+	"version" : "2.1.0",
 	"authors" : [{
 			"name" : "Karima Rafes",
 			"email" : "karima.rafes@bordercloud.com",
@@ -17,8 +17,10 @@
 		}
 	],
 	"require" : {
-		"php" : ">=7"
-	},
+		"php" : ">=7",
+    "ext-xml": "*",
+    "ext-json": "*"
+  },
 	"repositories" : [{
 			"type" : "vcs",
 			"url" : "https://github.com/BorderCloud/SPARQL"
@@ -34,7 +36,7 @@
 	"autoload" : {
 		"psr-4" : {
 			"BorderCloud\\SPARQL\\" : "src/",
-			"BorderCloud\\SPARQL\\Tests\\" : "tests/"
+      "BorderCloud\\SPARQL\\Tests\\" : "tests/"
 		}
 	},
   "bin" : [

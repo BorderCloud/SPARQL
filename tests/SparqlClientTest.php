@@ -1,11 +1,6 @@
 <?php
 declare(strict_types=1);
-/**
- * Created by PhpStorm.
- * User: karima
- * Date: 13/08/17
- * Time: 14:19
- */
+
 namespace BorderCloud\SPARQL\Tests;
 
 $loader = require __DIR__ . '/../vendor/autoload.php';
@@ -23,7 +18,7 @@ final class SparqlClientTest extends TestCase
     private $_client;
 
 
-    public function setUp():void
+    public function setUp()
     {
         $endpoint = "https://query.wikidata.org/sparql";
         $this->_client = new SparqlClient();

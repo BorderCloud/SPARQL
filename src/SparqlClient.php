@@ -530,7 +530,6 @@ final class SparqlClient extends Base
         $t1 = SparqlClient::mtime();
         $result = null;
         $returnResult = null;
-
         switch ($result_format) {
             case "json":
                 $response = $this->queryRead($q, "application/sparql-results+json");
@@ -544,7 +543,7 @@ final class SparqlClient extends Base
             case "raw":
             default: // rows
                 $response = "";
-                if (preg_match("/(INSERT|DELETE|CLEAR|LOAD)\s/i", $q)) {
+                if (ParserSparql::isUpdateQuery($q)) {
                     $response = $this->queryUpdate($q);
                 } else {
                     $response = $this->queryRead($q);
@@ -826,5 +825,4 @@ final class SparqlClient extends Base
         }
         return $objCurl;
     }
-
 }
