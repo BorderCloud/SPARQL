@@ -18,7 +18,7 @@ final class SparqlClientTest extends TestCase
     private $_client;
 
 
-    public function setUp()
+    public function setUp():void
     {
         $endpoint = "https://query.wikidata.org/sparql";
         $this->_client = new SparqlClient();
