@@ -1,11 +1,13 @@
 <?php
-declare(strict_types=1);
-
 /**
+ * Class SparqlClient
+ *
  * @git git@github.com:BorderCloud/SPARQL.git
  * @author Karima Rafes <karima.rafes@bordercloud.com>
  * @license http://creativecommons.org/licenses/by-sa/4.0/
  */
+declare(strict_types=1);
+
 namespace BorderCloud\SPARQL;
 /**
  * Sparql HTTP Client for SPARQL1.1's Endpoint
@@ -141,6 +143,7 @@ namespace BorderCloud\SPARQL;
  *      throw new Exception(print_r($err,true));
  * }
  * var_dump($res);
+ * ```
  *
  * You can change the format of the response with the function
  * queryRead and queryUpdate.
@@ -237,6 +240,8 @@ final class SparqlClient extends Base
     private $_password;
 
     /**
+     * Error message of the last query executed
+     *
      * @var string
      */
     private $_lastError;
@@ -272,6 +277,8 @@ final class SparqlClient extends Base
     }
 
     /**
+     * Get the proxy address
+     *
      * @return string
      */
     public function getProxyHost(): string
@@ -280,6 +287,8 @@ final class SparqlClient extends Base
     }
 
     /**
+     * Set the proxy address
+     *
      * @param string $proxyHost
      */
     public function setProxyHost(string $proxyHost)
@@ -288,6 +297,8 @@ final class SparqlClient extends Base
     }
 
     /**
+     * Get the proxy port
+     *
      * @return int
      */
     public function getProxyPort(): int
@@ -296,6 +307,8 @@ final class SparqlClient extends Base
     }
 
     /**
+     * Set the proxy port
+     *
      * @param int $proxyPort
      */
     public function setProxyPort(int $proxyPort)
@@ -467,8 +480,7 @@ final class SparqlClient extends Base
     /**
      * Set the server password
      *
-     * @param string $password
-     *            : server password
+     * @param string $password : server password
      * @access public
      */
     public function setPassword($password)
@@ -518,21 +530,20 @@ final class SparqlClient extends Base
      * <li>raw to return bool for request ask, insert and delete
      * </ul>
      *
-     * @param string $q
-     *            : Query SPARQL
-     * @param string $result_format
-     *            : Optional, rows, row or raw
+     * @param string $q : Query SPARQL
+     * @param string $result_format  : Optional, rows, row or raw
+     * @param int $timeout : Optional, time in seconds for complete query (default 600)
      * @return array|bool in function of parameter $result_format
      * @access public
      */
-    public function query($q, $result_format = 'rows')
+    public function query($q, $result_format = 'rows', $timeout = 600)
     {
         $t1 = SparqlClient::mtime();
         $result = null;
         $returnResult = null;
         switch ($result_format) {
             case "json":
-                $response = $this->queryRead($q, "application/sparql-results+json");
+                $response = $this->queryRead($q, "application/sparql-results+json", $timeout);
                 if (! empty($response)) {
                     $result = json_decode($response);
                 } else {
@@ -544,9 +555,11 @@ final class SparqlClient extends Base
             default: // rows
                 $response = "";
                 if (ParserSparql::isUpdateQuery($q)) {
-                    $response = $this->queryUpdate($q);
+                    //TODO PHP8.0 use named arguments
+                    $response = $this->queryUpdate($q, "application/sparql-results+xml", $timeout);
                 } else {
-                    $response = $this->queryRead($q);
+                    //TODO PHP8.0 use named arguments
+                    $response = $this->queryRead($q, "application/sparql-results+xml", $timeout);
                 }
                 if(! empty($response)){
                     $parser = $this->_parserSparqlResult->getParser();
@@ -596,14 +609,13 @@ final class SparqlClient extends Base
      * If you want parse the result of this function, it's better and simpler
      * to use the function query().
      *
-     * @param string $query
-     *            : Query Sparql
-     * @param string $typeOutput
-     *            by default "application/sparql-results+xml",
+     * @param string $query : Query Sparql
+     * @param string $typeOutput by default "application/sparql-results+xml",
+     * @param int $timeout : Optional, time in seconds for complete query (default 600)
      * @return string response of server or false if error (to do getErrors())
      * @access public
      */
-    public function queryRead($query, $typeOutput = "application/sparql-results+xml")
+    public function queryRead($query, $typeOutput = "application/sparql-results+xml", $timeout = 600)
     {
         $client = $this->initCurl();
         $sUri = $this->_endpointRead;
@@ -614,9 +626,11 @@ final class SparqlClient extends Base
                 $this->_nameParameterQueryRead => $query
             );
             if ($this->_methodHTTPRead == "POST") {
-                $response = $client->sendPostData($sUri, $data);
+                //TODO PHP8.0 use named arguments
+                $response = $client->sendPostData($sUri, $data,null, null, $timeout);
             } else {
-                $response = $client->fetchUrl($sUri, $data); // fix for wikidata
+                //TODO PHP8.0 use named arguments
+                $response = $client->fetchUrl($sUri, $data, null, $timeout); // fix for wikidata
             }
         } else {
             $data = array(
@@ -626,11 +640,13 @@ final class SparqlClient extends Base
             ); // fix for sesame
                                       // print_r($data);
             if ($this->_methodHTTPRead == "POST") {
+                //TODO PHP8.0 use named arguments
                 $response = $client->sendPostData($sUri, $data, array(
                     'Accept: ' . $typeOutput
-                ));
+                ),null, $timeout);
             } else {
-                $response = $client->fetchUrl($sUri, $data); // fix for wikidata
+                //TODO PHP8.0 use named arguments
+                $response = $client->fetchUrl($sUri, $data,null, $timeout); // fix for wikidata
             }
         }
 
@@ -649,19 +665,33 @@ final class SparqlClient extends Base
 
     /**
      * Send a request SPARQL of type insert data or delete data to endpoint directly.
-     * <ul>
-     * <li>Example insert : PREFIX ex: <http://example.com/> INSERT DATA { GRAPH <http://mygraph> { ex:a ex:p 12 .}}
-     * <li>Example delete : PREFIX ex: <http://example.com/> DELETE DATA { GRAPH <http://mygraph> { ex:a ex:p 12 .}}
-     * </ul>
      *
-     * @param string $query
-     *            : Query Sparql of type insert data or delete data only
-     * @param string $typeOutput
-     *            by default "application/sparql-results+xml",
+     * Example insert :
+     * ```sparql
+     * PREFIX ex: <http://example.com/>
+     * INSERT DATA {
+     *      GRAPH <http://mygraph> {
+     *          ex:a ex:p 12 .
+     *      }
+     * }
+     * ```
+     * Example delete :
+     * ```sparql
+     * PREFIX ex: <http://example.com/>
+     * DELETE DATA {
+     *      GRAPH <http://mygraph> {
+     *          ex:a ex:p 12 .
+     *      }
+     * }
+     * ```
+     *
+     * @param string $query : Query Sparql of type insert data or delete data only
+     * @param string $typeOutput  by default "application/sparql-results+xml",
+     * @param int $timeout : Optional, time in seconds for complete query (default 600)
      * @return bool true if it did or false if error (to do getErrors())
      * @access public
      */
-    public function queryUpdate($query, $typeOutput = "application/sparql-results+xml")
+    public function queryUpdate($query, $typeOutput = "application/sparql-results+xml", $timeout = 600)
     {
         if (empty($this->_endpointWrite)) {
             $message = "Sorry, you have not configure the endpoint to update the database.\n";
@@ -679,9 +709,11 @@ final class SparqlClient extends Base
                 $this->_nameParameterQueryWrite => $query
             );
             if ($this->_methodHTTPWrite == "POST") {
-                $response = $client->sendPostData($sUri, $data);
+                //TODO PHP8.0 use named arguments
+                $response = $client->sendPostData($sUri, $data, null, null, $timeout);
             } else {
-                $response = $client->fetchUrl($sUri, $data); // fix for wikidata
+                //TODO PHP8.0 use named arguments
+                $response = $client->fetchUrl($sUri, $data,null, $timeout); // fix for wikidata
             }
         } else {
             $data = array(
@@ -692,11 +724,13 @@ final class SparqlClient extends Base
             ); // fix for sesame
                                       // print_r($data);
             if ($this->_methodHTTPWrite == "POST") {
+                //TODO PHP8.0 use named arguments
                 $response = $client->sendPostData($sUri, $data, array(
                     'Accept: ' . $typeOutput
-                ));
+                ), null, $timeout);
             } else {
-                $response = $client->fetchUrl($sUri, $data); // fix for wikidata
+                //TODO PHP8.0 use named arguments
+                $response = $client->fetchUrl($sUri, $data, null, $timeout); // fix for wikidata
             }
         }
 

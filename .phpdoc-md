@@ -1,0 +1,9 @@
+<?php
+return (object)[
+    'rootNamespace' => 'BorderCloud\SPARQL',
+    'destDirectory' => 'doc',
+    'format' => 'github',
+    'classes' => [
+        '\BorderCloud\SPARQL\SparqlClient'
+    ],
+];

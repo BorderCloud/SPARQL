@@ -72,3 +72,5 @@ local.properties
 ## PHPStorm
 #################
 .idea/
+/auth.json
+/.phpunit.result.cache

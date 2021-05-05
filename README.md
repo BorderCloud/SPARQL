@@ -181,8 +181,8 @@ $sc->setLogin("login");
 $sc->setPassword("password");
 
 $q = "select *  where {?x ?y ?z.} LIMIT 5";
-$rows = $sp_ReadAndWrite->query($q, 'rows');
-$err = $sp_ReadAndWrite->getErrors();
+$rows = $sc->query($q, 'rows');
+$err = $sc->getErrors();
 if ($err) {
     print_r($err);
     throw new Exception(print_r($err, true));
@@ -203,10 +203,9 @@ foreach ($rows["result"]["rows"] as $row) {
 }
 ```
 
-###  Documentation API
+###  Documentation
 
-* [SparqlClient](doc/BorderCloud-SPARQL-SparqlClient.md)
-* [API](doc/ApiIndex.md)
+* [SparqlClient](doc/SparqlClient.md)
 
 ### Copy Sources and tests
 
@@ -233,6 +232,10 @@ If you have remarks, questions, or suggestions, please send them to
 karima.rafes@bordercloud.com
 
 ### Release-Notes
+
+* V2.1.0
+** Add tools to detect SPARQL update queries
+** Add the timeout parameter at the send of the query
 
 * V2.0.9
 ** Fix : bugs in SPARQL client
@@ -272,8 +275,7 @@ work. If not, see <http://creativecommons.org/licenses/by-sa/4.0/>.
 ### Compile DOC
 
 ```sh
-php vendor/phpdocumentor/phpdocumentor/bin/phpdoc --directory=src --template="xml"
-vendor/evert/phpdoc-md/bin/phpdocmd ./output/structure.xml doc
+php vendor/clean/phpdoc-md/bin/phpdoc-md
 ```
 
 ### Git...

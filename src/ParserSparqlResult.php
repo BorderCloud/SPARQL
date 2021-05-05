@@ -241,13 +241,11 @@ class ParserSparqlResult extends Base
 
         // Check ASK response
         if ( isset($rs1['boolean']) &&  isset($rs2['boolean'])) {
-            if ($rs1['boolean'] === $rs2['boolean']) {
-                return $difference; // return true ;
-            } else {
+            if ($rs1['boolean'] !== $rs2['boolean']) {
                 $difference[1] = $rs1;
                 $difference[2] =  $rs2;
-                return $difference; // return false ;
             }
+            return $difference;
         }
 
         // A/ Check the variables lists in the header are the same.

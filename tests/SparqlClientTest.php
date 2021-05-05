@@ -217,4 +217,40 @@ final class SparqlClientTest extends TestCase
         $this->assertTrue($isError);
         $this->assertEquals($errorMessage,"Lexical error at line 1, column 2.  Encountered: \" \" (32), after : \"s\"");
     }
+
+    public function testErrorTimeout()
+    {
+        $endpoint = "https://10.255.255.1/sparql"; //fake...
+        $sc = new SparqlClient();
+        $sc->setEndpointRead($endpoint);
+        $sc->setEndpointWrite($endpoint);
+        //error in the query
+        $q = "select ...";
+        $rows = $sc->query($q,'rows',1);
+        $err = $sc->getErrors();
+        $isError = false;
+        $errorMessage = "";
+        if ($err) {
+            $isError = true;
+            //print_r($err);
+            //throw new Exception(print_r($err, true));
+            $errorMessage =  $sc->getLastError();
+        }
+        $this->assertTrue($isError);
+        $this->assertStringContainsString("Connection timed out after",$errorMessage);
+
+        $q = "insert ...";
+        $rows = $sc->query($q,'raw',1);
+        $err = $sc->getErrors();
+        $isError = false;
+        $errorMessage = "";
+        if ($err) {
+            $isError = true;
+            //print_r($err);
+            //throw new Exception(print_r($err, true));
+            $errorMessage =  $sc->getLastError();
+        }
+        $this->assertTrue($isError);
+        $this->assertStringContainsString("Connection timed out after",$errorMessage);
+    }
 }

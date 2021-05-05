@@ -29,6 +29,20 @@ class Curl
     private $_debug = false;
 
     /**
+     * Error message about the last request executed
+     *
+     * @var string
+     */
+    private $_lastError;
+
+    /**
+     * Error code of Curl about the last request executed
+     *
+     * @var int
+     */
+    private $_lastErrorCode;
+
+    /**
      * Curl constructor.
      *
      * @param bool $debug
@@ -175,16 +189,7 @@ class Curl
         // and finally send curl request
         $result = curl_exec($this->_curlHandler);
 
-        if (curl_errno($this->_curlHandler)) {
-            if ($this->_debug) {
-                echo "Error occurred in Curl\n";
-                echo "Error number: " . curl_errno($this->_curlHandler) . "\n";
-                echo "Error message: " . curl_error($this->_curlHandler) . "\n";
-            }
-            return false;
-        } else {
-            return $result;
-        }
+        return $this->checkResult($result);
     }
 
     /**
@@ -249,16 +254,7 @@ class Curl
         // and finally send curl request
         $result = curl_exec($this->_curlHandler);
 
-        if (curl_errno($this->_curlHandler)) {
-            if ($this->_debug) {
-                echo "Error occurred in Curl\n";
-                echo "Error number: " . curl_errno($this->_curlHandler) . "\n";
-                echo "Error message: " . curl_error($this->_curlHandler) . "\n";
-            }
-            return false;
-        } else {
-            return $result;
-        }
+        return $this->checkResult($result);
     }
 
     /**
@@ -300,10 +296,12 @@ class Curl
         curl_exec($this->_curlHandler);
 
         if (curl_errno($this->_curlHandler)) {
+            $this->_lastErrorCode = curl_errno($this->_curlHandler);
+            $this->_lastError = curl_error($this->_curlHandler);
             if ($this->_debug) {
                 echo "Error occurred in Curl\n";
-                echo "Error number: " . curl_errno($this->_curlHandler) . "\n";
-                echo "Error message: " . curl_error($this->_curlHandler) . "\n";
+                echo "Error number: " . $this->_lastErrorCode . "\n";
+                echo "Error message: " . $this->_lastError . "\n";
             }
             return false;
         } else {
@@ -395,16 +393,7 @@ class Curl
         // and finally send curl request
         $result = curl_exec($this->_curlHandler);
 
-        if (curl_errno($this->_curlHandler)) {
-            if ($this->_debug) {
-                echo "Error occurred in Curl\n";
-                echo "Error number: " . curl_errno($this->_curlHandler) . "\n";
-                echo "Error message: " . curl_error($this->_curlHandler) . "\n";
-            }
-            return false;
-        } else {
-            return $result;
-        }
+        return $this->checkResult($result);
     }
 
     /**
@@ -528,16 +517,7 @@ class Curl
         // and finally send curl request
         $result = curl_exec($this->_curlHandler);
 
-        if (curl_errno($this->_curlHandler)) {
-            if ($this->_debug) {
-                echo "Error occurred in Curl\n";
-                echo "Error number: " . curl_errno($this->_curlHandler) . "\n";
-                echo "Error message: " . curl_error($this->_curlHandler) . "\n";
-            }
-            return false;
-        } else {
-            return $result;
-        }
+        return $this->checkResult($result);
     }
 
     /**
@@ -594,16 +574,7 @@ class Curl
         // and finally send curl request
         $result = curl_exec($this->_curlHandler);
 
-        if (curl_errno($this->_curlHandler)) {
-            if ($this->_debug) {
-                echo "Error occurred in Curl\n";
-                echo "Error number: " . curl_errno($this->_curlHandler) . "\n";
-                echo "Error message: " . curl_error($this->_curlHandler) . "\n";
-            }
-            return false;
-        } else {
-            return $result;
-        }
+        return $this->checkResult($result);
     }
 
     /**
@@ -645,13 +616,26 @@ class Curl
         // and finally send curl request
         $result = curl_exec($this->_curlHandler);
 
+        return $this->checkResult($result);
+    }
+
+    private function checkResult($result)
+    {
         if (curl_errno($this->_curlHandler)) {
+            $this->_lastErrorCode = curl_errno($this->_curlHandler);
+            $this->_lastError = curl_error($this->_curlHandler);
             if ($this->_debug) {
                 echo "Error occurred in Curl\n";
-                echo "Error number: " . curl_errno($this->_curlHandler) . "\n";
-                echo "Error message: " . curl_error($this->_curlHandler) . "\n";
+                echo "Error number: " . $this->_lastErrorCode . "\n";
+                echo "Error message: " . $this->_lastError . "\n";
             }
-            return false;
+            if (
+                $this->_lastErrorCode == 28 //timeout
+            ) {
+                return $this->_lastError;
+            } else {
+                return "Error (see log)";
+            }
         } else {
             return $result;
         }
