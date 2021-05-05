@@ -30,7 +30,7 @@ before_install:
 
 # execute any number of scripts before the test run, custom env's are available as variables
 before_script:
-  - composer config github-oauth.github.com COMPOSER-TOKEN
+  - composer config github-oauth.github.com $COMPOSER-TOKEN
   - composer install
   - composer update
 #  - if [[ "$DB" == "pgsql" ]]; then psql -c "DROP DATABASE IF EXISTS hello_world_test;" -U postgres; fi
