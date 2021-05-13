@@ -109,7 +109,11 @@ class ToolsBlankNode
                 // echo "-------------";
                 // print_r($value1);
                 // print_r($value2);
-                if (count(array_diff_assoc($value1, $value2)) == 0 && count(array_diff_assoc($value2, $value1)) == 0) {
+                if (
+                    (! is_array($value1) && ! is_array($value2) && $value2 === $value1)
+                    ||
+                    (is_array($value1) && is_array($value2) && count(array_diff_assoc($value1, $value2)) == 0 && count(array_diff_assoc($value2, $value1)) == 0)
+                ) {
                     unset($clone1[$key1]);
                     unset($clone2[$key2]);
                     break;
