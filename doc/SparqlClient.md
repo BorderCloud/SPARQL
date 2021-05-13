@@ -11,11 +11,12 @@ Example : send a simple query to DBpedia
 
 use BorderCloud\SPARQL\SparqlClient;
 
-$endpoint ="http://dbpedia.org/";
-$sp_readonly = new SparqlClient($endpoint);
+$endpoint = "http://dbpedia.org/sparql";
+$sc = new SparqlClient();
+$sc->setEndpointRead($endpoint);
 $q = "select * where {?x ?y ?z.} LIMIT 5";
-$rows = $sp_readonly->query($q, 'rows');
-$err = $sp_readonly->getErrors();
+$rows = $sc->query($q, 'rows');
+$err = $sc->getErrors();
 if ($err) {
      print_r($err);
      throw new Exception(print_r($err,true));
@@ -42,29 +43,31 @@ setEndpointUpdate,setNameParameterQueryRead or setNameParameterQueryWrite.
 
 EXAMPLE to config : Virtuoso
 ```php
-$sc_readonly = new SparqlClient("http://localhost/tests/",$modeRead,$modeDebug);
+$sc = new SparqlClient();
+$sc->setEndpointRead($endpoint);
+$sc->setEndpointWrite($endpoint);
 ```
 
 EXAMPLE to config : Sesame
 ```php
-$sc_readonly = new SparqlClient("",$modeRead,$modeDebug);
-$sc_readonly->setEndpointQuery("http://localhost/openrdf-sesame/repositories/tests");
-$sc_readonly->setEndpointUpdate("http://localhost/openrdf-sesame/repositories/tests/statements");
+$sc = new SparqlClient();
+$sc->setEndpointRead("http://localhost/openrdf-sesame/repositories/tests");
+$sc->setEndpointWrite("http://localhost/openrdf-sesame/repositories/tests/statements");
 ```
 
 EXAMPLE to config : Fuseki
 ```php
-$sc_readonly = new SparqlClient("",$modeRead,$modeDebug);
-$sc_readonly->setEndpointQuery("http://localhost/tests/query");
-$sc_readonly->setEndpointUpdate("http://localhost/tests/update");
+$sc = new SparqlClient();
+$sc->setEndpointRead("http://localhost/tests/query");
+$sc->setEndpointWrite("http://localhost/tests/update");
 ```
 
 EXAMPLE to config : Allegrograph
 ```php
-$sc_readonly = new SparqlClient("",$modeRead,$modeDebug);
-$sc_readonly->setEndpointQuery("http://localhost/repositories/tests");
-$sc_readonly->setEndpointUpdate("http://localhost/repositories/tests");
-$sc_readonly->setNameParameterQueryWrite("query");
+$sc = new SparqlClient();
+$sc->setEndpointRead("http://localhost/repositories/tests");
+$sc->setEndpointWrite("http://localhost/repositories/tests");
+$sc->setNameParameterQueryWrite("query");
 ```
 
 With a query ASK, you can use the parameter 'raw'
@@ -76,8 +79,8 @@ Example : send a query ASK with the parameter raw
 $q = "PREFIX a: <http://example.com/test/a/>
 PREFIX b: <http://example.com/test/b/>
 ask where { GRAPH <".$graph."> {a:A b:Name \"Test3\" .}} ";
-$res = $sc_readonly->query($q);
-$err = $sc_readonly->getErrors();
+$res = $sc->query($q);
+$err = $sc->getErrors();
 if ($err) {
      print_r($err);
      throw new Exception(print_r($err,true));
@@ -93,7 +96,9 @@ With 3 parameters, you are alone to update your graph.
 
 Example : send a query Insert
 ```php
-$sp_write = new SparqlClient($MyEndPointSparql,$MyCode,$MyGraph);
+$sc = new SparqlClient();
+$sc->setEndpointRead($MyEndPointSparql);
+$sc->setEndpointWrite($MyEndPointSparql);
 echo "\nInsert :";
 $q = "
 PREFIX a: <http://example.com/test/a/>
@@ -104,8 +109,8 @@ a:A b:Name \"Test1\" .
 a:A b:Name \"Test2\" .
 a:A b:Name \"Test3\" .
 }}";
-$res = $sp_write->query($q,'raw');
-$err = $sp_write->getErrors();
+$res = $sc->query($q,'raw');
+$err = $sc->getErrors();
 if ($err) {
      print_r($err);
      throw new Exception(print_r($err,true));
@@ -115,7 +120,9 @@ var_dump($res);
 
 Example : send a query Delete
 ```php
-$sp_write = new SparqlClient($MyEndPointSparql,$MyCode,$MyGraph);
+$sc = new SparqlClient();
+$sc->setEndpointRead($MyEndPointSparql);
+$sc->setEndpointWrite($MyEndPointSparql);
 
 echo "\nDelete :";
 $q = "
