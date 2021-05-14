@@ -15,16 +15,7 @@ final class ParserCsvTest extends TestCase
     public function testParserTsv()
     {
         //check write
-        $sample = <<<EOT
-?s	?p	?o	?p2	?o2
-<http://example.org/s1>	<http://example.org/p1>	<http://example.org/s2>	<http://example.org/p2>	"foo"
-<http://example.org/s2>	<http://example.org/p2>	"foo"
-<http://example.org/s3>	<http://example.org/p3>	"bar"
-<http://example.org/s4>	<http://example.org/p4>	4
-<http://example.org/s5>	<http://example.org/p5>	5.5
-<http://example.org/s6>	<http://example.org/p6>	_:b0
-<http://example.org/s7>	<http://example.org/p7>	"10"
-EOT;
+        $sample = file_get_contents (__DIR__ . "/csvtsv02.tsv");
         $expected = [
             0 => [
                 "?s" => "<http://example.org/s1>",
@@ -78,11 +69,11 @@ EOT;
         ];
         //"text/tab-separated-values; charset=utf-8":
 		$tabResultDataset = ParserCSV::csvToArray($sample,"\t");
-        $sort = false;
+        $sort = true;
         $distinct = false;
         $tabDiff = ParserCSV::compare($expected,$tabResultDataset,$sort,$distinct);
-//        print_r($tabDiff);
-//        print_r($tabResultDataset);
+        print_r($tabDiff);
+        print_r($tabResultDataset);
         $this->assertTrue(count($tabDiff)==0,print_r($tabDiff,true));
     }
 

@@ -46,7 +46,7 @@ class ParserCSV
                 $tabTemp = array();
                 // array_combine($names,$values);
                 foreach ($names as $key => $nameCol) {
-                    if (isset($values[$key])) {
+                    if (isset($values[$key]) && ! empty($values[$key])) {
                         $value = $values[$key];
                         if (strpos($value,'"')===0 || strpos($value,"'")===0){
                             $value = trim($value,'"');
