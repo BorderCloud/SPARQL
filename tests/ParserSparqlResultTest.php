@@ -12,8 +12,6 @@ use PHPUnit\Framework\TestCase;
 
 final class ParserSparqlResultTest extends TestCase
 {
-
-
     public function testResetParserAsk()
     {
         //check write

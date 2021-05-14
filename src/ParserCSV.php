@@ -48,10 +48,11 @@ class ParserCSV
                 foreach ($names as $key => $nameCol) {
                     if (isset($values[$key])) {
                         $value = $values[$key];
-                        if (ToolsConvert::isTrueFloat($value)) {
-                            $value = floatval($value);
-                        } elseif (is_int($value)) {
-                            $value = intval($value);
+                        if (strpos($value,'"')===0 || strpos($value,"'")===0){
+                            $value = trim($value,'"');
+                            $value = trim($value,"'");
+                        }elseif (is_numeric($value)) {
+                            $value = $value + 0;
                         }
                         $tabTemp[$nameCol] = $value;
                     } else {
