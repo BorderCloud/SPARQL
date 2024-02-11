@@ -198,11 +198,12 @@ class Curl
      *
      * @param string $url
      * @param array $getData get data array ie. $foo['get_var_name'] = $value (default null)
+     * @param array $arrayHeader header array of the HTTP request (default null)
      * @param string $ip address to bind (default null)
      * @param int $timeout in sec for complete curl operation (default 600)
      * @return bool|string data
      */
-    public function fetchUrl($url, $getData = null, $ip = null, $timeout = 600)
+    public function fetchUrl($url, $getData = null, $arrayHeader = null, $ip = null, $timeout = 600)
     {
         if ($this->_debug) {
             curl_setopt($this->_curlHandler, CURLOPT_VERBOSE, true);
@@ -223,6 +224,10 @@ class Curl
         } else {
             $get_string = null;
         }
+
+        // set header
+        if ($arrayHeader != null)
+            curl_setopt($this->_curlHandler, CURLOPT_HTTPHEADER, $arrayHeader);
 
         // set url to post to
         if (empty($get_string)) {
