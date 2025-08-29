@@ -233,6 +233,9 @@ karima.rafes@bordercloud.com
 
 ### Release-Notes
 
+* V2.2.0
+** Fix : Remove deprecated PHP 8.4 functions
+
 * V2.1.0
 ** Add tools to detect SPARQL update queries
 ** Add the timeout parameter at the send of the query

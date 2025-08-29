@@ -54,8 +54,8 @@ class ParserSparqlResult extends Base
         // Don't alter the case of the data
         xml_parser_set_option($objectParser, XML_OPTION_CASE_FOLDING, false);
 
-        xml_set_element_handler($objectParser, "startElement", "endElement");
-        xml_set_character_data_handler($objectParser, "contentHandler");
+        xml_set_element_handler($objectParser, [ $this,  "startElement" ], [ $this,  "endElement" ]);
+        xml_set_character_data_handler($objectParser, [ $this, "contentHandler" ]);
         return $objectParser;
     }
 
