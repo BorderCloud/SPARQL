@@ -49,7 +49,6 @@ class ParserSparqlResult extends Base
     public function getParser()
     {
         $objectParser = xml_parser_create();
-        xml_set_object($objectParser, $this);
 
         // Don't alter the case of the data
         xml_parser_set_option($objectParser, XML_OPTION_CASE_FOLDING, false);
