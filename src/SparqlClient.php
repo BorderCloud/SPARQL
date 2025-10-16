@@ -637,13 +637,13 @@ final class SparqlClient extends Base
                 $response = $client->sendPostData($sUri, $data,null, null, $timeout);
             } else {
                 //TODO PHP8.0 use named arguments
-                $response = $client->fetchUrl($sUri, $data, null, $timeout); // fix for wikidata
+                $response = $client->fetchUrl($sUri, $data, null, null, $timeout); // fix for wikidata
             }
         } else {
             $data = array(
                 $this->_nameParameterQueryRead => $query,
                 "output" => Mimetype::getShortNameOfMimetype($typeOutput), // possible fix for 4store/fuseki..
-                "Accept" => $typeOutput
+                "format" => Mimetype::getShortNameOfMimetype($typeOutput) // some endpoints use 'format' param
             ); // fix for sesame
                                       // print_r($data);
             if ($this->_methodHTTPRead == "POST") {
@@ -653,7 +653,9 @@ final class SparqlClient extends Base
                 ),null, $timeout);
             } else {
                 //TODO PHP8.0 use named arguments
-                $response = $client->fetchUrl($sUri, $data,null, $timeout); // fix for wikidata
+                $response = $client->fetchUrl($sUri, $data, array(
+                    'Accept: ' . $typeOutput
+                ), null, $timeout); // fix for wikidata
             }
         }
 
@@ -720,7 +722,7 @@ final class SparqlClient extends Base
                 $response = $client->sendPostData($sUri, $data, null, null, $timeout);
             } else {
                 //TODO PHP8.0 use named arguments
-                $response = $client->fetchUrl($sUri, $data,null, $timeout); // fix for wikidata
+                $response = $client->fetchUrl($sUri, $data, null, null, $timeout); // fix for wikidata
             }
         } else {
             $data = array(
@@ -737,7 +739,7 @@ final class SparqlClient extends Base
                 ), null, $timeout);
             } else {
                 //TODO PHP8.0 use named arguments
-                $response = $client->fetchUrl($sUri, $data, null, $timeout); // fix for wikidata
+                $response = $client->fetchUrl($sUri, $data, null,  null, $timeout); // fix for wikidata
             }
         }
 
